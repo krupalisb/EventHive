@@ -1433,7 +1433,7 @@ try{
 const email=req.params.email;
 
 const { data,error } = await supabase
-.from("registrations")   // <-- change from users
+.from("users")   // FIXED
 .select("name,event,qr_code")
 .eq("email",email)
 .limit(1);
