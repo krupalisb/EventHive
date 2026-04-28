@@ -1299,8 +1299,8 @@ const {data:users}=
 await supabase
 .from("users")
 .select("*")
-.eq("email",email)
-.eq("event",event);
+.eq("email",email.trim())
+.ilike("event",event.trim());
 
 if(!users.length){
 return res.send(

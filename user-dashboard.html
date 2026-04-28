@@ -282,6 +282,7 @@ document.getElementById("scoreBox").innerHTML=
 html || "No scores published yet";
 
 }
+
 async function loadCertificates(){
 
 const res=await fetch(
@@ -319,15 +320,26 @@ data.map(c=>`
 
 <b>${c.event}</b><br>
 
-${c.type}
+${
+c.type==="1st place"
+? "1st Place"
+: c.type==="2nd place"
+? "2nd Place"
+: "Participation"
+}
 
 <br><br>
 
-<button onclick="
+<button
+onclick="
 window.open(
-'https://eventhive-bxaw.onrender.com/download-certificate?email=${email}&event=${c.event}&type=${c.type}'
-)">
+'https://eventhive-bxaw.onrender.com/download-certificate?email=${email}&event=${encodeURIComponent(c.event)}&type=${encodeURIComponent(c.type)}'
+)
+"
+class="bg-green-500 text-white px-4 py-2 rounded">
+
 Download Certificate
+
 </button>
 
 </div>
