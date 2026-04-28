@@ -284,24 +284,35 @@ html || "No scores published yet";
 }
 async function loadCertificates(){
 
-const res=
-await fetch(
+const res=await fetch(
 `https://eventhive-bxaw.onrender.com/my-certificates/${email}`
 );
 
-let data=
-await res.json();
+let data=await res.json();
 
-data=data.filter(
-(v,i,self)=>
-i===self.findIndex(
-t=>t.event===v.event
-)
-);
+const rank={
+"Participant":1,
+"2nd place":2,
+"1st place":3
+};
 
-document.getElementById(
-"certList"
-).innerHTML=
+/* keep highest certificate for each event */
+const best={};
+
+data.forEach(c=>{
+
+if(
+!best[c.event] ||
+rank[c.type] > rank[best[c.event].type]
+){
+best[c.event]=c;
+}
+
+});
+
+data=Object.values(best);
+
+document.getElementById("certList").innerHTML=
 data.map(c=>`
 
 <div class="bg-white p-4 mb-3 rounded shadow">
@@ -322,8 +333,7 @@ c.type==="1st place"
 onclick="
 window.open(
 'https://eventhive-bxaw.onrender.com/download-certificate?email=${email}&event=${c.event}&type=${c.type}'
-)
-"
+)"
 class="bg-green-500 text-white px-4 py-2 rounded">
 
 Download Certificate
