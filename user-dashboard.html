@@ -176,23 +176,57 @@ ${e.event}
 
 async function loadResults(){
 
-const res=
-await fetch(
+const res=await fetch(
 "https://eventhive-bxaw.onrender.com/results"
 );
 
-const data=
-await res.json();
+const data=await res.json();
 
-document.getElementById(
-"results"
-).innerHTML=
+document.getElementById("results").innerHTML=
 data.map(r=>`
-<div class="bg-white p-4 mb-3 rounded shadow">
-<b>${r.event}</b><br>
-Winner:
-${r.winner?.team || "-"}
+
+<div class="bg-white p-5 mb-4 rounded shadow">
+
+<h3 class="text-xl font-bold mb-3">
+${r.event}
+</h3>
+
+<p>
+🥇 <b>Winner:</b> ${r.winner?.team || "-"}
+ (${r.winner?.score || 0} pts)
+</p>
+
+<p>
+Participants:
+${r.winner?.members?.join(", ") || "-"}
+</p>
+
+<br>
+
+<p>
+🥈 <b>Runner-Up:</b>
+${r.runner?.team || "Not Declared"}
+${r.runner ? `(${r.runner.score} pts)` : ""}
+</p>
+
+<p>
+Participants:
+${r.runner?.members?.join(", ") || "-"}
+</p>
+
+<br>
+
+<b>Full Leaderboard:</b>
+
+${r.leaderboard.map((t,i)=>`
+<div class="mt-2 p-2 border rounded">
+${i+1}. <b>${t.team}</b> — ${t.score} pts <br>
+Members: ${t.members.join(", ")}
 </div>
+`).join("")}
+
+</div>
+
 `).join("");
 
 }
