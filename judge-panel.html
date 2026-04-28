@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Judge Panel</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="p-6 bg-gray-100">
+
+<h1 class="text-2xl font-bold mb-6">
+Judge Panel
+</h1>
+
+<div class="bg-white p-6 rounded shadow w-full max-w-lg">
+
+<select id="userSelect"
+class="w-full p-2 border mb-4 rounded">
+<option value="">Select Team</option>
+</select>
+
+<select id="event"
+class="w-full p-2 border mb-4 rounded">
+<option value="">
+Select Event
+</option>
+</select>
+
+<input
+id="judge1"
+type="number"
+placeholder="Judge 1 Marks"
+class="w-full p-2 border mb-4 rounded">
+
+<input
+id="judge2"
+type="number"
+placeholder="Judge 2 Marks"
+class="w-full p-2 border mb-4 rounded">
+
+<p class="mb-4 font-semibold">
+Total Score:
+<span id="totalMarks">0</span>
+</p>
+
+<button
+onclick="submitScore()"
+class="w-full bg-blue-500 text-white p-2 rounded">
+Save / Update Scores
+</button>
+
+</div>
+
+<script>
+
+async function loadUsers(){
+
+const res=
+await fetch(
+"http://localhost:5000/users"
+);
+
+const users=
+await res.json();
+
+const select=
+document.getElementById(
+"userSelect"
+);
+
+select.innerHTML=
+'<option value="">Select Team</option>';
+
+const teams={};
+
+users.forEach(u=>{
+
+let key=
+u.team_name || u.name;
+
+if(!teams[key]){
+teams[key]=u;
+}
+
+});
+
+Object.values(teams)
+.forEach(team=>{
+
+const option=
+document.createElement(
+"option"
+);
+
+/* FIXED: use actual user id */
+option.value=
+team.team_name || team.name;
+
+option.text=
+team.team_name || team.name;
+
+option.dataset.event=
+team.event;
+
+select.appendChild(option);
+
+});
+
+}
+
+
+/* team select */
+document
+.getElementById("userSelect")
+.addEventListener(
+"change",
+function(){
+
+const selected =
+this.options[
+this.selectedIndex
+];
+
+document
+.getElementById("event")
+.value =
+selected.dataset.event;
+
+document.getElementById(
+"judge1"
+).value="";
+
+document.getElementById(
+"judge2"
+).value="";
+
+document.getElementById(
+"totalMarks"
+).innerText="0";
+
+}
+);
+
+
+document.getElementById(
+"judge1"
+).addEventListener(
+"input",
+calcTotal
+);
+
+document.getElementById(
+"judge2"
+).addEventListener(
+"input",
+calcTotal
+);
+
+
+function calcTotal(){
+
+const j1=
+Number(
+document.getElementById(
+"judge1"
+).value || 0
+);
+
+const j2=
+Number(
+document.getElementById(
+"judge2"
+).value || 0
+);
+
+document.getElementById(
+"totalMarks"
+).innerText=
+j1+j2;
+
+}
+
+
+async function loadEvents(){
+
+const res=
+await fetch(
+"http://localhost:5000/events"
+);
+
+const events=
+await res.json();
+
+const select=
+document.getElementById(
+"event"
+);
+
+select.innerHTML=
+'<option value="">Select Event</option>';
+
+events.forEach(e=>{
+
+const option=
+document.createElement(
+"option"
+);
+
+option.value=e.name;
+option.text=e.name;
+
+select.appendChild(
+option
+);
+
+});
+
+}
+
+
+
+/* SAVE */
+async function submitScore(){
+
+const user_id =
+document.getElementById(
+"userSelect"
+).value.trim();
+
+const event =
+document.getElementById(
+"event"
+).value.trim();
+
+const judge1 =
+document.getElementById(
+"judge1"
+).value.trim();
+
+const judge2 =
+document.getElementById(
+"judge2"
+).value.trim();
+
+
+if(
+user_id==="" ||
+event==="" ||
+judge1==="" ||
+judge2===""
+){
+alert(
+"Select team and enter both judges marks"
+);
+return;
+}
+
+console.log({
+user_id,
+event,
+judge1,
+judge2
+});
+
+const res=
+await fetch(
+"http://localhost:5000/add-score",
+{
+method:"POST",
+headers:{
+"Content-Type":
+"application/json"
+},
+body:JSON.stringify({
+user_id,
+event,
+judge1,
+judge2
+})
+}
+);
+
+const data=
+await res.json();
+
+alert(
+data.message
+);
+
+}
+
+
+/* load once only */
+loadUsers();
+loadEvents();
+
+/* REMOVED THIS BUG:
+setInterval(loadUsers,3000);
+*/
+
+</script>
+
+</body>
+</html>

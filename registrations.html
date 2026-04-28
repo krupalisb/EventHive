@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Registrations</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="p-6 bg-gray-100">
+
+<h1 class="text-2xl font-bold mb-4">Registrations</h1>
+
+<!-- SEARCH -->
+<input id="search" placeholder="Search name..." 
+class="p-2 border mb-4 w-64" onkeyup="filterUsers()">
+
+<!-- FILTER -->
+<select id="filter" onchange="filterUsers()" class="p-2 border mb-4 ml-2">
+<option value="">All Events</option>
+</select>
+
+<!-- TABLE -->
+<table class="w-full bg-white shadow rounded">
+<thead class="bg-gray-200">
+<tr>
+<th class="p-2">Team</th>
+<th class="p-2">Members</th>
+<th class="p-2">Event</th>
+<th class="p-2">Attendance</th>
+</tr>
+</thead>
+
+<tbody id="table"></tbody>
+
+</table>
+
+<script>
+
+let usersData = [];
+
+/* LOAD USERS */
+async function loadUsers() {
+  const res = await fetch("http://localhost:5000/users");
+  usersData = await res.json();
+
+  loadFilters();
+  display(usersData);
+}
+
+/* DISPLAY TABLE */
+function display(data){
+
+const table=
+document.getElementById(
+"table"
+);
+
+table.innerHTML="";
+
+const teams={};
+
+
+// group members into teams
+data.forEach(u=>{
+
+let key=
+u.team_name || u.name;
+
+
+if(!teams[key]){
+
+teams[key]={
+event:u.event,
+members:[],
+attendance:true
+};
+
+}
+
+
+// prevent duplicates
+if(
+!teams[key].members.find(
+m=>m.email===u.email
+)
+){
+
+teams[key].members.push({
+name:u.name,
+email:u.email
+});
+
+}
+
+
+if(!u.attendance){
+teams[key].attendance=false;
+}
+
+});
+
+
+
+// show grouped teams
+for(let team in teams){
+
+const memberList=
+teams[team].members
+.map(m=>
+`${m.name}<br>
+<span class='text-sm text-gray-500'>
+${m.email}
+</span>`
+)
+.join("<hr>");
+
+
+const row=`
+<tr class="border-t">
+
+<td class="p-2 font-bold">
+${team}
+</td>
+
+<td class="p-2">
+${memberList}
+</td>
+
+<td class="p-2">
+${teams[team].event}
+</td>
+
+<td class="p-2">
+${
+teams[team].attendance
+?
+"✅ Team Entered"
+:
+"⏳ Pending"
+}
+</td>
+
+</tr>
+`;
+
+table.innerHTML+=row;
+
+}
+
+}
+
+/* FILTER EVENTS */
+function loadFilters() {
+  const select = document.getElementById("filter");
+  const events = [...new Set(usersData.map(u => u.event))];
+
+  select.innerHTML = `<option value="">All Events</option>`;
+
+  events.forEach(e => {
+    const opt = document.createElement("option");
+    opt.value = e;
+    opt.textContent = e;
+    select.appendChild(opt);
+  });
+}
+
+/* SEARCH + FILTER */
+function filterUsers() {
+  const search = document.getElementById("search").value.toLowerCase();
+  const filter = document.getElementById("filter").value;
+
+  let filtered = usersData.filter(u =>
+    u.name.toLowerCase().includes(search)
+  );
+
+  if (filter) {
+    filtered = filtered.filter(u => u.event === filter);
+  }
+
+  display(filtered);
+}
+
+
+loadUsers();
+
+</script>
+
+</body>
+</html>

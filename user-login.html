@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>User Login</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex justify-center items-center h-screen">
+
+<div class="bg-white p-8 rounded shadow w-96">
+
+<h2 class="text-2xl font-bold mb-6 text-center">
+Participant Login
+</h2>
+
+<input
+id="email"
+type="email"
+placeholder="Enter registered email"
+class="w-full p-3 border rounded mb-4">
+
+<button
+onclick="loginUser()"
+class="w-full bg-blue-600 text-white p-3 rounded">
+Login
+</button>
+
+<p id="msg"
+class="mt-4 text-center text-red-500">
+</p>
+
+</div>
+
+<script>
+
+async function loginUser(){
+
+const email=
+document.getElementById(
+"email"
+).value;
+
+if(!email){
+return;
+}
+
+const res=
+await fetch(
+`http://localhost:5000/my-events/${email}`
+);
+
+const data=
+await res.json();
+
+if(data.length===0){
+
+document.getElementById(
+"msg"
+).innerText=
+"User not found";
+
+return;
+
+}
+
+localStorage.setItem(
+"userEmail",
+email
+);
+
+window.location.href=
+"user-dashboard.html";
+
+}
+
+</script>
+
+</body>
+</html>

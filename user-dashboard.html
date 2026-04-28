@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>User Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+<div class="flex">
+
+<div class="w-64 h-screen bg-blue-900 text-white p-5">
+<h1 class="text-2xl font-bold mb-8">User Panel</h1>
+
+<ul class="space-y-4">
+<li onclick="showSection('events')" class="cursor-pointer">📅 Events</li>
+<li onclick="showSection('registered')" class="cursor-pointer">📝 My Registrations</li>
+<li onclick="showSection('results')" class="cursor-pointer">🏆 Results</li>
+<li onclick="showSection('scores')" class="cursor-pointer">📊 My Scores</li>
+<li onclick="showSection('certificates')" class="cursor-pointer">🎓 Certificates</li>
+<li onclick="showSection('qrpass')" class="cursor-pointer">🎫 My QR Pass</li>
+<li onclick="showSection('announcements')" class="cursor-pointer">🔔 Announcements</li>
+<li onclick="logout()" class="cursor-pointer text-red-300">Logout</li>
+</ul>
+
+</div>
+
+
+<div class="flex-1 p-8">
+
+<h1 class="text-3xl font-bold mb-6">
+Welcome Participant
+</h1>
+
+
+<div id="eventsSection">
+<h2 class="text-xl font-bold mb-4">All Events</h2>
+<div id="eventsList"></div>
+</div>
+
+
+<div id="registeredSection" style="display:none">
+<h2 class="text-xl font-bold mb-4">My Registered Events</h2>
+<div id="myEvents"></div>
+</div>
+
+
+<div id="resultsSection" style="display:none">
+<h2 class="text-xl font-bold mb-4">Results</h2>
+<div id="results"></div>
+</div>
+
+
+<div id="scoresSection" style="display:none">
+<h2 class="text-xl font-bold mb-4">Judge Scores</h2>
+<div id="scoreBox"></div>
+</div>
+
+
+<!-- THIS IS THE VERSION YOU HAD -->
+<div id="certificatesSection" style="display:none">
+
+<h2 class="text-xl font-bold mb-4">
+Download Certificates
+</h2>
+
+<div id="certList"></div>
+
+</div>
+
+
+<div id="qrpassSection" style="display:none">
+<h2 class="text-xl font-bold mb-4">
+My Entry QR Pass
+</h2>
+
+<div id="qrSection"
+class="bg-white p-6 rounded shadow">
+Loading QR...
+</div>
+
+</div>
+
+
+<div id="announcementsSection" style="display:none">
+<h2 class="text-xl font-bold mb-4">
+Announcements
+</h2>
+
+<div id="announcementList"></div>
+
+</div>
+
+</div>
+</div>
+
+
+<script>
+
+const email=
+localStorage.getItem(
+"userEmail"
+);
+
+
+function showSection(section){
+
+document.getElementById("eventsSection").style.display="none";
+document.getElementById("registeredSection").style.display="none";
+document.getElementById("resultsSection").style.display="none";
+document.getElementById("scoresSection").style.display="none";
+document.getElementById("certificatesSection").style.display="none";
+document.getElementById("announcementsSection").style.display="none";
+document.getElementById("qrpassSection").style.display="none";
+
+document.getElementById(
+section+"Section"
+).style.display="block";
+
+}
+
+
+function logout(){
+localStorage.removeItem(
+"userEmail"
+);
+window.location.href=
+"user-login.html";
+}
+
+async function loadEvents(){
+
+const res=
+await fetch(
+"http://localhost:5000/event-status"
+);
+
+const data=
+await res.json();
+
+document.getElementById(
+"eventsList"
+).innerHTML=
+data.map(e=>`
+<div class="bg-white p-4 mb-3 rounded shadow">
+<b>${e.name}</b><br>
+${e.event_date}<br>
+${e.start_time}-${e.end_time}<br>
+Status:${e.status}
+</div>
+`).join("");
+
+}
+
+async function loadMyEvents(){
+
+const res=
+await fetch(
+`http://localhost:5000/my-events/${email}`
+);
+
+const data=
+await res.json();
+
+document.getElementById(
+"myEvents"
+).innerHTML=
+data.map(e=>`
+<div class="bg-white p-4 mb-3 rounded shadow">
+${e.event}
+</div>
+`).join("");
+
+}
+
+async function loadResults(){
+
+const res=
+await fetch(
+"http://localhost:5000/results"
+);
+
+const data=
+await res.json();
+
+document.getElementById(
+"results"
+).innerHTML=
+data.map(r=>`
+<div class="bg-white p-4 mb-3 rounded shadow">
+<b>${r.event}</b><br>
+Winner:
+${r.winner?.team || "-"}
+</div>
+`).join("");
+
+}
+
+async function loadScores(){
+
+const res=
+await fetch(
+`http://localhost:5000/my-scores/${email}`
+);
+
+const data=
+await res.json();
+
+document.getElementById(
+"scoreBox"
+).innerHTML=
+`
+<div class="bg-white p-6 rounded shadow">
+
+<p>
+Event:
+<b>${data.event}</b>
+</p>
+
+<p>
+Judge1:
+${data.judge1}
+</p>
+
+<p>
+Judge2:
+${data.judge2}
+</p>
+
+<p class="text-xl font-bold">
+Total:
+${data.total}
+</p>
+
+</div>
+`;
+
+}
+
+async function loadCertificates(){
+
+const res=
+await fetch(
+`http://localhost:5000/my-certificates/${email}`
+);
+
+let data=
+await res.json();
+
+data=data.filter(
+(v,i,self)=>
+i===self.findIndex(
+t=>t.event===v.event
+)
+);
+
+document.getElementById(
+"certList"
+).innerHTML=
+data.map(c=>`
+
+<div class="bg-white p-4 mb-3 rounded shadow">
+
+<b>${c.event}</b><br>
+
+${c.certificate_type}
+
+<br><br>
+
+<button
+onclick="
+window.open(
+'http://localhost:5000/download-certificate?email=${email}&event=${c.event}&type=${c.certificate_type}'
+)
+"
+class="bg-green-500 text-white px-4 py-2 rounded">
+
+Download Certificate
+
+</button>
+
+</div>
+
+`).join("");
+
+}
+
+async function loadAnnouncements(){
+
+const res=
+await fetch(
+"http://localhost:5000/announcements"
+);
+
+const data=
+await res.json();
+
+document.getElementById(
+"announcementList"
+).innerHTML=
+data.map(a=>`
+<div class="bg-white p-4 mb-3 rounded shadow">
+<h3 class="font-bold">
+${a.title}
+</h3>
+<p>${a.message}</p>
+</div>
+`).join("");
+
+}
+
+async function loadQR(){
+
+const res=
+await fetch(
+`http://localhost:5000/my-qr/${email}`
+);
+
+const data=
+await res.json();
+
+document.getElementById(
+"qrSection"
+).innerHTML=
+`
+<h3>${data.name}</h3>
+<p>${data.event}</p>
+<img src="${data.qr_code}" width="220">
+`;
+
+}
+
+loadEvents();
+loadMyEvents();
+loadResults();
+loadCertificates();
+loadScores();
+loadAnnouncements();
+loadQR();
+
+setInterval(loadEvents,3000);
+setInterval(loadAnnouncements,3000);
+
+</script>
+
+</body>
+</html>

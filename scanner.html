@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>QR Scanner</title>
+
+<script src="html5-qrcode.min.js"></script>
+
+<style>
+body {
+  background:#f3f4f6;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  height:100vh;
+  font-family:Arial;
+}
+
+#overlay {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:40px;
+  color:white;
+  z-index:9999;
+  display:none;
+}
+
+.green { background: #22c55e; }
+.red { background: red; }
+</style>
+
+</head>
+
+<body>
+
+<h1>Scan QR Code</h1>
+
+<div id="reader" style="width:300px;"></div>
+
+<p id="result"></p>
+
+<div id="overlay"></div>
+
+<script>
+
+const successSound = new Audio("https://www.soundjay.com/buttons/sounds/button-3.mp3");
+const errorSound = new Audio("https://www.soundjay.com/buttons/sounds/button-10.mp3");
+
+let scanned = false;
+let scanner;
+
+function startApp() {
+
+  scanner = new Html5Qrcode("reader");
+
+  Html5Qrcode.getCameras().then(devices => {
+
+    if (devices.length === 0) {
+      document.getElementById("result").innerText = "No camera found ❌";
+      return;
+    }
+
+    const cameraId = devices[0].id;
+
+    scanner.start(
+      cameraId,
+      { fps: 10, qrbox: 250 },
+      onScanSuccess
+    );
+
+  }).catch(err => {
+    console.log(err);
+    document.getElementById("result").innerText = "Camera error ❌";
+  });
+}
+
+function onScanSuccess(decodedText){
+
+if(scanned) return;
+
+scanned=true;
+scanner.stop();
+
+fetch("http://localhost:5000/scan",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+qrData:decodedText
+})
+})
+.then(res=>res.json())
+.then(data=>{
+
+// show ONLY backend response
+let text=data.message;
+
+if(data.name && data.event){
+text += `\n${data.name} - ${data.event}`;
+}
+
+document.getElementById("result").innerText=text;
+
+showResult(text);
+
+setTimeout(()=>{
+scanned=false;
+startApp();
+},3000);
+
+})
+.catch(()=>{
+document.getElementById("result").innerText="Scan Error ❌";
+});
+
+}
+
+function showResult(message) {
+
+  const overlay = document.getElementById("overlay");
+  overlay.style.display = "flex";
+
+  let displayText = message;
+
+  if (message.includes("\n")) {
+    const parts = message.split("\n");
+    displayText = parts[0] + "\n" + parts[1];
+  }
+
+  if (message.includes("Allowed")) {
+    overlay.className = "green";
+    overlay.innerText = displayText;
+    successSound.play();
+  } else {
+    overlay.className = "red";
+    overlay.innerText = displayText;
+    errorSound.play();
+  }
+
+  setTimeout(() => {
+    overlay.style.display = "none";
+  }, 2000);
+}
+
+window.onload = startApp;
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+<h1>Certificate Delivery Report</h1>
+<div id="list"></div>
+
+<script>
+async function loadCerts(){
+
+const res=
+await fetch(
+"http://localhost:5000/certificates"
+);
+
+const data=
+await res.json();
+
+document.getElementById(
+"list"
+).innerHTML=
+data.map(c=>`
+<div style="
+padding:12px;
+margin:8px;
+background:#f3f4f6;
+border-radius:8px;
+">
+<b>${c.name}</b><br>
+${c.email}<br>
+Event: ${c.event}<br>
+Certificate: ${c.certificate_type}<br>
+Sent: ${c.sent_at}<br>
+✅ Delivered
+</div>
+`).join("");
+
+}
+
+loadCerts();
+setInterval(loadCerts,3000);
+</script>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Settings - EventHive</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+<div class="flex">
+
+<!-- SIDEBAR -->
+<div class="w-64 h-screen bg-gradient-to-b from-blue-900 to-purple-900 text-white p-5 fixed">
+  <h1 class="text-2xl font-bold mb-10">EventHive</h1>
+
+  <ul class="space-y-4 text-sm">
+    <li onclick="go('dashboard.html')" class="cursor-pointer">Dashboard</li>
+    <li onclick="go('events.html')" class="cursor-pointer">Events</li>
+    <li onclick="go('registrations.html')" class="cursor-pointer">Registrations</li>
+    <li onclick="go('users.html')" class="cursor-pointer">Users</li>
+    <li class="bg-blue-500 p-2 rounded">Settings</li>
+  </ul>
+</div>
+
+<!-- MAIN -->
+<div class="flex-1 ml-64 p-8 space-y-6">
+
+<h1 class="text-2xl font-bold">System Settings</h1>
+
+<!-- GENERAL -->
+<div class="bg-white p-5 rounded shadow">
+
+  <!-- Header -->
+  <div onclick="toggleGeneral()" 
+       class="flex justify-between items-center cursor-pointer">
+    <h2 class="font-semibold text-lg">General Settings</h2>
+    <span id="generalIcon">▼</span>
+  </div>
+
+  <!-- Content -->
+  <div id="generalContent" class="mt-4 space-y-3">
+
+  <!-- Admin Name -->
+  <div class="border rounded p-3">
+    <div onclick="toggleItem('adminBox')" class="flex justify-between cursor-pointer">
+      <span>Admin Name</span>
+      <span id="adminIcon">▼</span>
+    </div>
+
+    <div id="adminBox" class="mt-2">
+      <input id="adminName" type="text"
+      <select id="defaultEvent" class="w-full border p-2 rounded"></select>
+    </div>
+  </div>
+
+  <!-- Event Name -->
+  <div class="border rounded p-3">
+    <div onclick="toggleItem('eventBox')" class="flex justify-between cursor-pointer">
+      <span>Event</span>
+      <span id="eventIcon">▼</span>
+    </div>
+
+    <div id="eventBox" class="mt-2">
+      <select class="w-full border p-2 rounded">
+     <option>CodeRush 2.0</option>
+     <option>RoboWar</option>
+     <option>Battle of Bands</option>
+     <option>Hackathon</option>
+      </select>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- EMAIL -->
+<div class="bg-white p-6 rounded-xl shadow">
+  <h2 class="font-bold mb-4">Email Settings</h2>
+
+  <label class="flex items-center gap-2">
+    <input type="checkbox" id="emailToggle">
+    Enable Email Notifications
+  </label>
+
+  <p class="text-sm text-gray-500 mt-2">
+    Disable this to stop all emails (announcements, certificates, messages)
+  </p>
+</div>
+
+<!-- SYSTEM -->
+<div class="bg-white p-6 rounded-xl shadow">
+  <h2 class="font-bold mb-4">System Controls</h2>
+
+  <button onclick="clearAnnouncements()"
+  class="bg-red-500 text-white px-4 py-2 rounded mr-3">
+    Clear Announcements
+  </button>
+
+  <button onclick="resetUsers()"
+  class="bg-gray-700 text-white px-4 py-2 rounded">
+    Reset Users
+  </button>
+</div>
+
+<!-- SAVE -->
+<div>
+  <button onclick="saveSettings()"
+  class="bg-blue-600 text-white px-6 py-2 rounded">
+    Save Settings
+  </button>
+
+  <p id="msg" class="mt-2 text-green-500"></p>
+</div>
+
+</div>
+</div>
+
+<script>
+
+// NAVIGATION
+function go(page) {
+  window.location.href = page;
+}
+
+// LOAD SETTINGS
+async function loadSettings() {
+  const res = await fetch("http://localhost:5000/settings");
+  const data = await res.json();
+
+  document.getElementById("emailToggle").checked = data.email_enabled;
+  document.getElementById("adminName").value = data.adminName;
+  document.getElementById("defaultEvent").value = data.defaultEvent;
+}
+
+// SAVE SETTINGS
+async function saveSettings() {
+  const email_enabled = document.getElementById("emailToggle").checked;
+  const adminName = document.getElementById("adminName").value;
+  const defaultEvent = document.getElementById("defaultEvent").value;
+
+  const res = await fetch("http://localhost:5000/settings", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ email_enabled, adminName, defaultEvent })
+  });
+
+  const data = await res.json();
+  document.getElementById("msg").innerText = data.message;
+}
+
+// SYSTEM ACTIONS
+async function clearAnnouncements() {
+  if (!confirm("Delete all announcements?")) return;
+
+  await fetch("http://localhost:5000/clear-announcements", {
+    method: "DELETE"
+  });
+
+  alert("Announcements cleared");
+}
+
+async function resetUsers() {
+  if (!confirm("Delete all users?")) return;
+
+  await fetch("http://localhost:5000/reset-users", {
+    method: "DELETE"
+  });
+
+  alert("Users reset");
+}
+
+loadSettings();
+
+</script>
+
+<script>
+function toggleGeneral() {
+  const content = document.getElementById("generalContent");
+  const icon = document.getElementById("generalIcon");
+
+  if (content.style.display === "none") {
+    content.style.display = "block";
+    icon.innerText = "▼";
+  } else {
+    content.style.display = "none";
+    icon.innerText = "▶";
+  }
+}
+</script>
+
+<script>
+function toggleItem(id) {
+  const box = document.getElementById(id);
+
+  if (box.style.display === "none") {
+    box.style.display = "block";
+  } else {
+    box.style.display = "none";
+  }
+}
+</script>
+
+</body>
+</html>

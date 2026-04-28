@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Results</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="p-6 bg-gray-100">
+
+<h1 class="text-2xl font-bold mb-6">Event Results</h1>
+
+<button onclick="downloadResults()" 
+class="bg-blue-500 text-white px-4 py-2 rounded mb-4 hover:bg-blue-600">
+Download Results
+</button>
+
+
+
+<div id="results" class="space-y-6"></div>
+
+<script>
+async function loadResults() {
+  const res = await fetch("http://localhost:5000/results");
+  const data = await res.json();
+
+  const container = document.getElementById("results");
+  container.innerHTML = "";
+
+  data.forEach(event => {
+
+    const div = document.createElement("div");
+    div.className = "bg-white p-5 rounded shadow";
+
+    div.innerHTML = `
+      <h2 class="text-lg font-bold mb-3">${event.event}</h2>
+
+      <p>🥇 Winner: ${event.winner?.team || "-"}</p>
+      <p>🥈 Runner: ${event.runner?.team || "-"}</p>
+      
+     <h3 class="mt-4 font-semibold">
+Leaderboard
+</h3>
+
+<ul class="list-disc ml-5">
+${event.leaderboard.map(p =>
+
+`<li class="border-b py-2">
+
+<div class="flex justify-between">
+<span class="font-semibold">
+${p.team}
+</span>
+
+<span class="font-semibold">
+${p.score}
+</span>
+</div>
+
+<div class="text-sm text-gray-500">
+${p.members.join(", ")}
+</div>
+
+</li>`
+
+).join("")}
+</ul>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+function downloadResults() {
+  fetch("http://localhost:5000/results")
+    .then(res => res.json())
+    .then(data => {
+
+      let text = "";
+
+      data.forEach(event => {
+        text += `Event: ${event.event}\n`;
+        text += `Winner: ${event.winner?.name || "-"}\n`;
+        text += `Runner: ${event.runner?.name || "-"}\n\n`;
+
+        event.leaderboard.forEach(p => {
+          text += `${p.name} - ${p.score}\n`;
+        });
+
+        text += "\n----------------------\n\n";
+      });
+
+      const blob = new Blob([text], { type: "text/plain" });
+      const link = document.createElement("a");
+
+      link.href = URL.createObjectURL(blob);
+      link.download = "results.txt";
+      link.click();
+    });
+}
+
+loadResults();
+
+setInterval(
+loadResults,
+3000
+);
+
+</script>
+
+</body>
+</html>

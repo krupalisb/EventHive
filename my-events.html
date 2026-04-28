@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Events</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-8">
+
+<div class="max-w-2xl mx-auto bg-white p-6 rounded shadow">
+
+<h1 class="text-2xl font-bold mb-6">
+My Events Dashboard
+</h1>
+
+<input
+id="email"
+placeholder="Enter Email"
+class="border p-2 w-full mb-4 rounded">
+
+<button
+onclick="loadEvents()"
+class="bg-blue-600 text-white px-4 py-2 rounded">
+View My Events
+</button>
+
+<div id="results"
+class="mt-6">
+</div>
+
+</div>
+
+
+<script>
+
+async function loadEvents(){
+
+const email=
+document.getElementById(
+"email"
+).value;
+
+const res=
+await fetch(
+`http://localhost:5000/my-events/${email}`
+);
+
+const data=
+await res.json();
+
+document.getElementById(
+"results"
+).innerHTML=`
+
+<h2 class="font-bold mb-3">
+Registered Events
+</h2>
+
+<ul class="space-y-2">
+
+${data.map(e=>`
+<li class="bg-gray-100 p-3 rounded">
+🏆 ${e.event}
+</li>
+`).join("")}
+
+</ul>
+
+`;
+
+}
+
+</script>
+
+</body>
+</html>

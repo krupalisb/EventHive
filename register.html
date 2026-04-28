@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Register - EventHive</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex justify-center items-start min-h-screen py-10">
+<div class="bg-white p-8 rounded shadow w-96">
+
+<h2 class="text-xl font-bold mb-4 text-center">Event Registration</h2>
+
+<form id="form">
+
+<input type="text" id="name" placeholder="Name" class="w-full p-2 border mb-3 rounded" required>
+
+<input type="email" id="email" placeholder="Email" class="w-full p-2 border mb-3 rounded" required>
+
+<!-- EVENT DROPDOWN -->
+<select id="event" class="w-full p-2 border mb-4 rounded"></select>
+
+<input id="teamName"
+placeholder="Team Name"
+class="w-full p-2 border mb-3 rounded">
+
+<h3 class="font-bold mb-2">
+Team Members
+</h3>
+
+<input id="member2Name"
+placeholder="Member 2 Name"
+class="w-full p-2 border mb-2 rounded">
+
+<input id="member2Email"
+placeholder="Member 2 Email"
+class="w-full p-2 border mb-3 rounded">
+
+
+<input id="member3Name"
+placeholder="Member 3 Name"
+class="w-full p-2 border mb-2 rounded">
+
+<input id="member3Email"
+placeholder="Member 3 Email"
+class="w-full p-2 border mb-3 rounded">
+
+
+<input id="member4Name"
+placeholder="Member 4 Name"
+class="w-full p-2 border mb-2 rounded">
+
+<input id="member4Email"
+placeholder="Member 4 Email"
+class="w-full p-2 border mb-3 rounded">
+
+
+<input id="member5Name"
+placeholder="Member 5 Name"
+class="w-full p-2 border mb-2 rounded">
+
+<input id="member5Email"
+placeholder="Member 5 Email"
+class="w-full p-2 border mb-4 rounded">
+
+<button class="w-full bg-blue-500 text-white p-2 rounded">
+Register
+</button>
+
+</form>
+
+<p id="msg" class="text-center mt-3 text-green-500"></p>
+
+</div>
+
+<script>
+/* LOAD EVENTS FROM DATABASE */
+async function loadEvents() {
+  try {
+    const res = await fetch("http://localhost:5000/events");
+    const data = await res.json();
+
+    const select = document.getElementById("event");
+    select.innerHTML = "";
+
+    data.forEach(e => {
+      const option = document.createElement("option");
+      option.value = e.name;
+      option.textContent = e.name;
+      select.appendChild(option);
+    });
+
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+loadEvents();
+
+function validName(name){
+return /^[A-Za-z ]+$/.test(name.trim());
+}
+
+/* REGISTER USER */
+document.getElementById("form").addEventListener("submit", async(e)=>{
+e.preventDefault();
+
+const leaderName=
+document.getElementById("name").value.trim();
+
+if(!validName(leaderName)){
+alert("Name must contain letters only");
+return;
+}
+
+const memberFields=[
+"member2Name",
+"member3Name",
+"member4Name",
+"member5Name"
+];
+
+for(let id of memberFields){
+
+let val=
+document.getElementById(id).value.trim();
+
+if(val && !validName(val)){
+alert("Team member names must contain letters only");
+return;
+}
+
+}
+
+const dataToSend={
+
+name:document.getElementById("name").value,
+email:document.getElementById("email").value,
+event:document.getElementById("event").value,
+
+teamName:
+document.getElementById("teamName").value,
+
+members:[
+{
+name:document.getElementById("name").value,
+email:document.getElementById("email").value
+},
+{
+name:document.getElementById("member2Name").value,
+email:document.getElementById("member2Email").value
+},
+{
+name:document.getElementById("member3Name").value,
+email:document.getElementById("member3Email").value
+},
+{
+name:document.getElementById("member4Name").value,
+email:document.getElementById("member4Email").value
+},
+{
+name:document.getElementById("member5Name").value,
+email:document.getElementById("member5Email").value
+}
+].filter(
+m=>m.name && m.email
+)
+
+};
+
+
+const res=await fetch(
+"http://localhost:5000/register",
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify(dataToSend)
+}
+);
+
+const result=await res.json();
+
+document.getElementById("msg").innerHTML=
+result.message;
+
+});
+
+</script>
+
+</body>
+</html>

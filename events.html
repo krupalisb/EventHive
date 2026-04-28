@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Events - EventHive</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+<div class="flex">
+
+<!-- SIDEBAR -->
+<div class="w-64 h-screen bg-gradient-to-b from-blue-900 to-purple-900 text-white p-5 fixed">
+  <h1 class="text-2xl font-bold mb-10">EventHive</h1>
+
+  <ul class="space-y-4 text-sm">
+    <li onclick="go('dashboard.html')" class="cursor-pointer">Dashboard</li>
+    <li class="bg-blue-500 p-2 rounded">Events</li>
+    <li onclick="go('registrations.html')" class="cursor-pointer">Registrations</li>
+    <li onclick="go('users.html')" class="cursor-pointer">Users</li>
+    <li onclick="go('settings.html')" class="cursor-pointer">Settings</li>
+  </ul>
+</div>
+
+<!-- MAIN -->
+<div class="flex-1 ml-64 p-8">
+
+<h1 class="text-2xl font-bold mb-6">Events Management</h1>
+
+<!-- ADD EVENT -->
+<div class="bg-white p-4 rounded shadow mb-6 flex gap-3">
+  <input id="name" placeholder="Event Name" class="p-2 border rounded w-1/3">
+  <input id="date" type="date" class="p-2 border rounded w-1/4">
+
+  <button onclick="addEvent()" class="bg-blue-500 text-white px-4 py-2 rounded">
+    Add Event
+  </button>
+</div>
+
+<!-- EVENTS LIST -->
+<div id="list" class="space-y-3"></div>
+
+</div>
+</div>
+
+<script>
+
+// NAVIGATION
+function go(page) {
+  window.location.href = page;
+}
+
+// ADD EVENT
+async function addEvent() {
+  const name = document.getElementById("name").value;
+  const date = document.getElementById("date").value;
+
+  if (!name || !date) {
+    alert("Enter all fields ❌");
+    return;
+  }
+
+  const res = await fetch("http://localhost:5000/add-event", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, date })
+  });
+
+  const data = await res.json();
+  alert(data.message);
+
+  document.getElementById("name").value = "";
+  document.getElementById("date").value = "";
+
+  loadEvents();
+}
+
+// LOAD EVENTS
+async function loadEvents() {
+  const res = await fetch("http://localhost:5000/events");
+  const data = await res.json();
+
+  const div = document.getElementById("list");
+  div.innerHTML = "";
+
+  data.forEach(e => {
+    const card = document.createElement("div");
+    card.className = "bg-white p-4 rounded shadow flex justify-between items-center";
+
+    card.innerHTML = `
+      <div>
+        <p class="font-bold">${e.name}</p>
+        <p class="text-sm text-gray-500">${e.date}</p>
+      </div>
+
+      <button onclick="deleteEvent('${e.id}')" 
+      class="bg-red-500 text-white px-3 py-1 rounded">
+        Delete
+      </button>
+    `;
+
+    div.appendChild(card);
+  });
+}
+
+// DELETE EVENT
+async function deleteEvent(id) {
+  if (!confirm("Delete this event?")) return;
+
+  await fetch(`http://localhost:5000/delete-event/${id}`, {
+    method: "DELETE"
+  });
+
+  loadEvents();
+}
+
+// INITIAL LOAD
+loadEvents();
+
+</script>
+
+</body>
+</html>

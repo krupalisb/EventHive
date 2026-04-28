@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Users</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-6">
+
+<h1 class="text-2xl font-bold mb-6">Participants</h1>
+
+<table class="w-full bg-white shadow rounded overflow-hidden">
+<thead class="bg-gray-200 text-left">
+<tr>
+<th class="p-3">Name</th>
+<th class="p-3">Email</th>
+<th class="p-3">Event</th>
+<th class="p-3">Attendance</th>
+<th class="p-3">Actions</th>
+</tr>
+</thead>
+
+<tbody id="usersTable"></tbody>
+</table>
+
+<script>
+
+// LOAD USERS
+async function loadUsers() {
+  const res = await fetch("http://localhost:5000/users");
+  const users = await res.json();
+
+  const table = document.getElementById("usersTable");
+  table.innerHTML = "";
+
+  users.forEach(u => {
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td class="p-3">${u.name}</td>
+      <td class="p-3">${u.email}</td>
+      <td class="p-3">${u.event}</td>
+
+      <td class="p-3">
+        <input type="checkbox" ${u.attendance ? "checked" : ""}
+          onchange="toggleAttendance('${u.id}', this.checked)">
+      </td>
+
+      <td class="p-3">
+        <button onclick="deleteUser('${u.id}')"
+        class="text-red-500 hover:underline">
+          Delete
+        </button>
+      </td>
+    `;
+
+    table.appendChild(tr);
+  });
+}
+
+// TOGGLE ATTENDANCE
+async function toggleAttendance(id, status) {
+  await fetch("http://localhost:5000/attendance", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ id, status })
+  });
+}
+
+// DELETE USER
+async function deleteUser(id) {
+  if (!confirm("Delete this user?")) return;
+
+  const res = await fetch(`http://localhost:5000/user/${id}`, {
+    method: "DELETE"
+  });
+
+  const data = await res.json();
+  alert(data.message);
+
+  loadUsers();
+}
+
+loadUsers();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Add Event</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 py-10">
+
+<div class="flex justify-center">
+
+<div class="bg-white p-6 rounded shadow w-96">
+
+<h2 class="text-xl font-bold mb-4">
+Add Event
+</h2>
+
+<input
+id="name"
+placeholder="Event Name"
+class="w-full p-2 border mb-3">
+
+<input
+id="eventDate"
+type="date"
+class="w-full p-2 border mb-3">
+
+<input
+id="startTime"
+type="time"
+class="w-full p-2 border mb-3">
+
+<input
+id="endTime"
+type="time"
+class="w-full p-2 border mb-3">
+
+<button
+onclick="addEvent()"
+class="bg-blue-500 text-white p-2 w-full rounded">
+Add Event
+</button>
+
+<p
+id="msg"
+class="text-green-500 text-center mt-3">
+</p>
+
+<hr class="my-6">
+
+<h3 class="text-lg font-bold mb-3">
+Existing Events
+</h3>
+
+<div id="eventList"></div>
+
+</div>
+</div>
+
+
+<script>
+
+async function addEvent(){
+
+const name=
+document.getElementById(
+"name"
+).value;
+
+const event_date=
+document.getElementById(
+"eventDate"
+).value;
+
+const start_time=
+document.getElementById(
+"startTime"
+).value;
+
+const end_time=
+document.getElementById(
+"endTime"
+).value;
+
+
+if(
+!name ||
+!event_date ||
+!start_time ||
+!end_time
+){
+alert(
+"Fill all fields"
+);
+return;
+}
+
+
+const res=
+await fetch(
+"http://localhost:5000/add-event",
+{
+method:"POST",
+headers:{
+"Content-Type":
+"application/json"
+},
+body:JSON.stringify({
+name,
+event_date,
+start_time,
+end_time
+})
+}
+);
+
+const data=
+await res.json();
+
+
+document.getElementById(
+"msg"
+).innerText=
+data.message;
+
+
+// clear fields
+document.getElementById(
+"name"
+).value="";
+
+document.getElementById(
+"eventDate"
+).value="";
+
+document.getElementById(
+"startTime"
+).value="";
+
+document.getElementById(
+"endTime"
+).value="";
+
+
+// refresh list
+loadEvents();
+
+}
+
+
+
+async function loadEvents(){
+
+const res=
+await fetch(
+"http://localhost:5000/events"
+);
+
+const data=
+await res.json();
+
+
+document.getElementById(
+"eventList"
+).innerHTML=
+data.map(e=>`
+
+<div class="flex justify-between items-center border p-3 rounded mb-2">
+
+<div>
+<b>${e.name}</b><br>
+
+<small>
+${e.event_date || e.date}
+</small><br>
+
+<small>
+${e.start_time || ""}
+${e.end_time ? " - "+e.end_time : ""}
+</small>
+
+</div>
+
+
+<div class="flex gap-2">
+
+<button
+onclick="editEvent(
+'${e.id}',
+'${e.name}',
+'${e.event_date}',
+'${e.start_time}',
+'${e.end_time}'
+)"
+class="bg-yellow-500 text-white px-3 py-1 rounded">
+Edit
+</button>
+
+<button
+onclick="deleteEvent('${e.id}')"
+class="bg-red-500 text-white px-3 py-1 rounded">
+Delete
+</button>
+
+</div>
+
+</div>
+
+`).join("");
+
+}
+
+
+
+async function deleteEvent(id){
+
+if(
+!confirm(
+"Delete this event?"
+)
+){
+return;
+}
+
+
+await fetch(
+`http://localhost:5000/delete-event/${id}`,
+{
+method:"DELETE"
+}
+);
+
+loadEvents();
+
+}
+
+
+
+async function editEvent(
+id,
+name,
+date,
+start,
+end
+){
+
+const newDate=
+prompt(
+"Enter new date (YYYY-MM-DD)",
+date
+);
+
+if(!newDate) return;
+
+
+const newStart=
+prompt(
+"Enter start time (HH:MM)",
+start
+);
+
+if(!newStart) return;
+
+
+const newEnd=
+prompt(
+"Enter end time (HH:MM)",
+end
+);
+
+if(!newEnd) return;
+
+
+await fetch(
+"http://localhost:5000/update-event",
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+id:id,
+event_date:newDate,
+start_time:newStart,
+end_time:newEnd
+})
+}
+);
+
+loadEvents();
+
+}
+
+
+loadEvents();
+
+</script>
+
+</body>
+</html>
