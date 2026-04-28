@@ -1426,22 +1426,28 @@ doc.end();
 
 });
 
-app.get("/my-qr/:email", async (req,res)=>{
+app.get("/my-qr/:email", async (req,res)=> {
 
-const email=req.params.email;
+const email = req.params.email.trim().toLowerCase();
 
 const { data, error } = await supabase
-.from("users")
-.select("email,event,qr_code")
-.eq("email", email)
-.order("created_at",{ascending:false})
-.limit(1);
+  .from("users")
+  .select("email,event,qr_code,created_at")
+  .ilike("email", email)
+  .order("created_at", { ascending:false })
+  .limit(1)
+  .maybeSingle();
 
-if(error || !data || data.length===0){
+if(error){
+console.log(error);
 return res.json(null);
 }
 
-res.json(data[0]);
+if(!data){
+return res.json(null);
+}
+
+res.json(data);
 
 });
 
