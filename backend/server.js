@@ -852,20 +852,24 @@ b.score-a.score
 
 for(let i=0;i<list.length;i++){
 
-let role="Participant";
+let roles=["Participant"];
 
-if(i===0)
-role="1st place";
+if(i===0){
+roles.push("1st place");
+}
 
-else if(i===1)
-role="2nd place";
-
+else if(i===1){
+roles.push("2nd place");
+}
 
 
 for(const member of list[i].members){
 
+for(const role of roles){
+
 const doc=
 new PDFDocument({
+
 size:"A4",
 layout:"landscape",
 margin:0
@@ -1112,6 +1116,7 @@ doc.end();
 
 }
 
+}
 }
 
 
