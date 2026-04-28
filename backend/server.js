@@ -52,26 +52,63 @@ app.get("/", (req, res) => res.send("Backend running 🚀"));
 
 // ================= DASHBOARD =================
 app.get("/dashboard", async (req, res) => {
-  try {
-    const { data: users } = await supabase.from("users").select("*");
-    const { data: events } = await supabase.from("events").select("*");
+try{
 
-    res.json({
-      totalEvents: events?.length || 0,
-      totalRegistrations: users?.length || 0,
-      approved: users?.filter(u => u.attendance).length || 0,
-      completed: 1,
-      recent: users?.slice(-5).reverse() || []
-    });
-  } catch {
-    res.json({
-      totalEvents: 0,
-      totalRegistrations: 0,
-      approved: 0,
-      completed: 0,
-      recent: []
-    });
-  }
+const { data: users } =
+await supabase
+.from("users")
+.select("*");
+
+const { data: events } =
+await supabase
+.from("events")
+.select("*");
+
+const now = new Date();
+
+/* count ended events */
+let completed =
+events.filter(e=>{
+
+let end=
+new Date(
+`${e.event_date}T${e.end_time}`
+);
+
+return now > end;
+
+}).length;
+
+res.json({
+totalEvents:
+events?.length || 0,
+
+totalRegistrations:
+users?.length || 0,
+
+approved:
+users?.filter(
+u=>u.attendance
+).length || 0,
+
+completed: completed,
+
+recent:
+users?.slice(-5).reverse() || []
+});
+
+}
+catch{
+
+res.json({
+totalEvents:0,
+totalRegistrations:0,
+approved:0,
+completed:0,
+recent:[]
+});
+
+}
 });
 
 // ================= ANALYTICS =================
