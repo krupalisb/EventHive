@@ -1433,29 +1433,22 @@ app.get("/my-qr/:email", async (req, res) => {
     const { data, error } = await supabase
       .from("users")
       .select("*")
-      .eq("email", email);
+      .eq("email", email)
+      .order("created_at", { ascending: false })
+      .limit(1);
 
-    console.log("Email:", email);
-    console.log("Data:", data);
-    console.log("Error:", error);
+    if (error) return res.status(500).json(error);
 
-    if (error) {
-      return res.status(500).json(error);
-    }
-
-    if (!data || data.length === 0) {
+    if (!data || data.length === 0){
       return res.json(null);
     }
 
-    // latest registration
-    res.json(data[data.length - 1]);
+    res.json(data[0]); // only latest record
 
   } catch(err){
-    console.log(err);
-    res.status(500).json({error: err.message});
+    res.status(500).json({ error: err.message });
   }
 });
-
 app.get("/my-scores/:email", async(req,res)=>{
 
 try{
