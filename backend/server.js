@@ -1617,13 +1617,5 @@ message:"Delete failed ❌"
 }
 });
 
-app.get("/test-users", async(req,res)=>{
-const { data, error } = await supabase
-.from("users")
-.select("*");
-
-res.json({error,data});
-});
-
 // ================= SERVER =================
 app.listen(5000, () => console.log("Server running 🚀"));
