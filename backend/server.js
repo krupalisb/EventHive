@@ -1342,6 +1342,9 @@ bg="bg-winner.png";
 else if(type==="2nd place"){
 bg="bg-runner.png";
 }
+else{
+bg="bg-participation.png";
+}
 
 doc.image(
 path.join(__dirname,bg),
@@ -1388,7 +1391,7 @@ align:"center"
 
 doc.fontSize(22)
 .text(
-type==="Participant"
+(type==="Participant" || type==="Participation")
 ? "For Participating In"
 : `For securing ${type}`,
 0,
