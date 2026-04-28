@@ -27,7 +27,7 @@
 
 // LOAD USERS
 async function loadUsers() {
-  const res = await fetch("http://localhost:5000/users");
+  const res = await fetch("https://eventhive-bxaw.onrender.com/users");
   const users = await res.json();
 
   const table = document.getElementById("usersTable");
@@ -60,7 +60,7 @@ async function loadUsers() {
 
 // TOGGLE ATTENDANCE
 async function toggleAttendance(id, status) {
-  await fetch("http://localhost:5000/attendance", {
+  await fetch("https://eventhive-bxaw.onrender.com/attendance", {
     method: "POST",
     headers: {"Content-Type":"application/json"},
     body: JSON.stringify({ id, status })
@@ -71,7 +71,7 @@ async function toggleAttendance(id, status) {
 async function deleteUser(id) {
   if (!confirm("Delete this user?")) return;
 
-  const res = await fetch(`http://localhost:5000/user/${id}`, {
+  const res = await fetch(`https://eventhive-bxaw.onrender.com/user/${id}`, {
     method: "DELETE"
   });
 

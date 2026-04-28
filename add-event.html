@@ -98,7 +98,7 @@ return;
 
 const res=
 await fetch(
-"http://localhost:5000/add-event",
+"https://eventhive-bxaw.onrender.com/add-event",
 {
 method:"POST",
 headers:{
@@ -153,7 +153,7 @@ async function loadEvents(){
 
 const res=
 await fetch(
-"http://localhost:5000/events"
+"https://eventhive-bxaw.onrender.com/events"
 );
 
 const data=
@@ -224,7 +224,7 @@ return;
 
 
 await fetch(
-`http://localhost:5000/delete-event/${id}`,
+`https://eventhive-bxaw.onrender.com/delete-event/${id}`,
 {
 method:"DELETE"
 }
@@ -272,7 +272,7 @@ if(!newEnd) return;
 
 
 await fetch(
-"http://localhost:5000/update-event",
+"https://eventhive-bxaw.onrender.com/update-event",
 {
 method:"POST",
 headers:{

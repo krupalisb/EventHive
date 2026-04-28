@@ -132,7 +132,7 @@ async function loadEvents(){
 
 const res=
 await fetch(
-"http://localhost:5000/event-status"
+"https://eventhive-bxaw.onrender.com/event-status"
 );
 
 const data=
@@ -156,7 +156,7 @@ async function loadMyEvents(){
 
 const res=
 await fetch(
-`http://localhost:5000/my-events/${email}`
+`https://eventhive-bxaw.onrender.com/my-events/${email}`
 );
 
 const data=
@@ -177,7 +177,7 @@ async function loadResults(){
 
 const res=
 await fetch(
-"http://localhost:5000/results"
+"https://eventhive-bxaw.onrender.com/results"
 );
 
 const data=
@@ -200,7 +200,7 @@ async function loadScores(){
 
 const res=
 await fetch(
-`http://localhost:5000/my-scores/${email}`
+`https://eventhive-bxaw.onrender.com/my-scores/${email}`
 );
 
 const data=
@@ -241,7 +241,7 @@ async function loadCertificates(){
 
 const res=
 await fetch(
-`http://localhost:5000/my-certificates/${email}`
+`https://eventhive-bxaw.onrender.com/my-certificates/${email}`
 );
 
 let data=
@@ -270,7 +270,7 @@ ${c.certificate_type}
 <button
 onclick="
 window.open(
-'http://localhost:5000/download-certificate?email=${email}&event=${c.event}&type=${c.certificate_type}'
+'https://eventhive-bxaw.onrender.com/download-certificate?email=${email}&event=${c.event}&type=${c.certificate_type}'
 )
 "
 class="bg-green-500 text-white px-4 py-2 rounded">
@@ -289,7 +289,7 @@ async function loadAnnouncements(){
 
 const res=
 await fetch(
-"http://localhost:5000/announcements"
+"https://eventhive-bxaw.onrender.com/announcements"
 );
 
 const data=
@@ -313,7 +313,7 @@ async function loadQR(){
 
 const res=
 await fetch(
-`http://localhost:5000/my-qr/${email}`
+`https://eventhive-bxaw.onrender.com/my-qr/${email}`
 );
 
 const data=

@@ -40,7 +40,7 @@ Send Announcement
 
 const res=
 await fetch(
-"http://localhost:5000/events"
+"https://eventhive-bxaw.onrender.com/events"
 );
 
 const data=
@@ -76,7 +76,7 @@ async function sendAnnouncement() {
   }
 
   try {
-    const res = await fetch("http://localhost:5000/announce", {
+    const res = await fetch("https://eventhive-bxaw.onrender.com/announce", {
       method: "POST",
       headers: {"Content-Type":"application/json"},
       body: JSON.stringify({
@@ -107,7 +107,7 @@ async function sendAnnouncement() {
 // LOAD
 async function loadAnnouncements() {
   try {
-    const res = await fetch("http://localhost:5000/announcements");
+    const res = await fetch("https://eventhive-bxaw.onrender.com/announcements");
     const data = await res.json();
 
     const div = document.getElementById("list");
@@ -146,7 +146,7 @@ loadAnnouncements();
 async function deleteAnnouncement(id) {
   if (!confirm("Are you sure you want to delete this?")) return;
 
-  const res = await fetch(`http://localhost:5000/announcement/${id}`, {
+  const res = await fetch(`https://eventhive-bxaw.onrender.com/announcement/${id}`, {
     method: "DELETE"
   });
 

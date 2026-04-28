@@ -242,7 +242,7 @@ let barChart, pieChart;
 
 async function loadCharts() {
   try {
-    const res = await fetch("http://localhost:5000/analytics");
+    const res = await fetch("https://eventhive-bxaw.onrender.com/analytics");
     const data = await res.json();
 
     if (barChart) barChart.destroy();
@@ -287,7 +287,7 @@ loadCharts();
 <script>
 async function loadDashboard() {
   try {
-    const res = await fetch("http://localhost:5000/dashboard");
+    const res = await fetch("https://eventhive-bxaw.onrender.com/dashboard");
     const data = await res.json();
 
     document.getElementById("totalEvents").innerText = data.totalEvents;
@@ -326,7 +326,7 @@ loadDashboard();
 <!-- LOAD EVENTS -->
 <script>
 async function loadEvents() {
-  const res = await fetch("http://localhost:5000/event-status");
+  const res = await fetch("https://eventhive-bxaw.onrender.com/event-status");
   const data = await res.json();
 
   const div = document.getElementById("eventsList");
@@ -371,19 +371,19 @@ function goToRegistrations() {
 }
 
 async function sendReminders() {
-  const res = await fetch("http://localhost:5000/send-reminders", { method: "POST" });
+  const res = await fetch("https://eventhive-bxaw.onrender.com/send-reminders", { method: "POST" });
   const data = await res.json();
   alert(data.message);
 }
 
 async function sendCertificates() {
-  const res = await fetch("http://localhost:5000/send-certificates", { method: "POST" });
+  const res = await fetch("https://eventhive-bxaw.onrender.com/send-certificates", { method: "POST" });
   const data = await res.json();
   alert(data.message);
 }
 
 async function loadLiveEntries() {
-  const res = await fetch("http://localhost:5000/live-entries");
+  const res = await fetch("https://eventhive-bxaw.onrender.com/live-entries");
   const data = await res.json();
 
   const div = document.getElementById("liveEntries");
@@ -408,7 +408,7 @@ async function loadLiveEntries() {
 }
 
 async function loadEntryCounts() {
-  const res = await fetch("http://localhost:5000/entry-count");
+  const res = await fetch("https://eventhive-bxaw.onrender.com/entry-count");
   const data = await res.json();
 
   const div = document.getElementById("entryCounts");
@@ -491,7 +491,7 @@ setInterval(loadEntryCounts, 5000);
 async function loadVisitors(){
 
 const res=await fetch(
-"http://localhost:5000/visitor-dashboard"
+"https://eventhive-bxaw.onrender.com/visitor-dashboard"
 );
 
 const data=await res.json();
@@ -519,7 +519,7 @@ async function loadCertificateStatus(){
 
 const res=
 await fetch(
-"http://localhost:5000/certificates"
+"https://eventhive-bxaw.onrender.com/certificates"
 );
 
 const data=

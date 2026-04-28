@@ -125,7 +125,7 @@ function go(page) {
 
 // LOAD SETTINGS
 async function loadSettings() {
-  const res = await fetch("http://localhost:5000/settings");
+  const res = await fetch("https://eventhive-bxaw.onrender.com/settings");
   const data = await res.json();
 
   document.getElementById("emailToggle").checked = data.email_enabled;
@@ -139,7 +139,7 @@ async function saveSettings() {
   const adminName = document.getElementById("adminName").value;
   const defaultEvent = document.getElementById("defaultEvent").value;
 
-  const res = await fetch("http://localhost:5000/settings", {
+  const res = await fetch("https://eventhive-bxaw.onrender.com/settings", {
     method: "POST",
     headers: {"Content-Type":"application/json"},
     body: JSON.stringify({ email_enabled, adminName, defaultEvent })
@@ -153,7 +153,7 @@ async function saveSettings() {
 async function clearAnnouncements() {
   if (!confirm("Delete all announcements?")) return;
 
-  await fetch("http://localhost:5000/clear-announcements", {
+  await fetch("https://eventhive-bxaw.onrender.com/clear-announcements", {
     method: "DELETE"
   });
 
@@ -163,7 +163,7 @@ async function clearAnnouncements() {
 async function resetUsers() {
   if (!confirm("Delete all users?")) return;
 
-  await fetch("http://localhost:5000/reset-users", {
+  await fetch("https://eventhive-bxaw.onrender.com/reset-users", {
     method: "DELETE"
   });
 

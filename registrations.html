@@ -39,7 +39,7 @@ let usersData = [];
 
 /* LOAD USERS */
 async function loadUsers() {
-  const res = await fetch("http://localhost:5000/users");
+  const res = await fetch("https://eventhive-bxaw.onrender.com/users");
   usersData = await res.json();
 
   loadFilters();

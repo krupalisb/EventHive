@@ -20,7 +20,7 @@ Download Results
 
 <script>
 async function loadResults() {
-  const res = await fetch("http://localhost:5000/results");
+  const res = await fetch("https://eventhive-bxaw.onrender.com/results");
   const data = await res.json();
 
   const container = document.getElementById("results");
@@ -71,7 +71,7 @@ ${p.members.join(", ")}
 }
 
 function downloadResults() {
-  fetch("http://localhost:5000/results")
+  fetch("https://eventhive-bxaw.onrender.com/results")
     .then(res => res.json())
     .then(data => {
 

@@ -61,7 +61,7 @@ async function addEvent() {
     return;
   }
 
-  const res = await fetch("http://localhost:5000/add-event", {
+  const res = await fetch("https://eventhive-bxaw.onrender.com/add-event", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, date })
@@ -78,7 +78,7 @@ async function addEvent() {
 
 // LOAD EVENTS
 async function loadEvents() {
-  const res = await fetch("http://localhost:5000/events");
+  const res = await fetch("https://eventhive-bxaw.onrender.com/events");
   const data = await res.json();
 
   const div = document.getElementById("list");
@@ -108,7 +108,7 @@ async function loadEvents() {
 async function deleteEvent(id) {
   if (!confirm("Delete this event?")) return;
 
-  await fetch(`http://localhost:5000/delete-event/${id}`, {
+  await fetch(`https://eventhive-bxaw.onrender.com/delete-event/${id}`, {
     method: "DELETE"
   });
 
