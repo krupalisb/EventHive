@@ -97,10 +97,11 @@ Announcements
 
 <script>
 
-const email=
-localStorage.getItem(
-"userEmail"
-);
+const email = localStorage.getItem("userEmail");
+
+if(!email){
+window.location.href="user-login.html";
+}
 
 
 function showSection(section){

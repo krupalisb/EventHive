@@ -1426,20 +1426,36 @@ doc.end();
 
 });
 
-app.get(
-"/my-qr/:email",
-async(req,res)=>{
+app.get("/my-qr/:email", async (req,res)=>{
 
-const email=
-req.params.email;
+try{
 
-const {data}=await supabase
+const email = req.params.email;
+
+const { data, error } = await supabase
 .from("users")
-.select("name,qr_code,event")
-.eq("email",email)
-.single();
+.select("name, qr_code, event")
+.eq("email", email);
 
-res.json(data);
+if(error || !data || data.length===0){
+return res.json({
+name:"Not found",
+event:"",
+qr_code:""
+});
+}
+
+res.json(data[0]);   // first matching registration
+
+}catch(err){
+console.log(err);
+
+res.json({
+name:"Error",
+event:"",
+qr_code:""
+});
+}
 
 });
 
