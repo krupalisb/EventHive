@@ -291,28 +291,6 @@ const res=await fetch(
 
 let data=await res.json();
 
-const rank={
-"Participant":1,
-"Participation":1,
-"2nd place":2,
-"1st place":3
-};
-
-const best={};
-
-data.forEach(c=>{
-
-if(
-!best[c.event] ||
-rank[c.type] > rank[best[c.event].type]
-){
-best[c.event]=c;
-}
-
-});
-
-data=Object.values(best);
-
 document.getElementById("certList").innerHTML=
 data.map(c=>`
 
