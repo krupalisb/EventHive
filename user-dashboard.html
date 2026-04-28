@@ -199,42 +199,65 @@ ${r.winner?.team || "-"}
 
 async function loadScores(){
 
-const res=
-await fetch(
-`https://eventhive-bxaw.onrender.com/my-scores/${email}`
+const email = localStorage.getItem("userEmail");
+
+const userRes = await fetch(
+`https://eventhive-bxaw.onrender.com/my-qr/${email}`
 );
 
-const data=
-await res.json();
+const user = await userRes.json();
 
-document.getElementById(
-"scoreBox"
-).innerHTML=
-`
+if(!user){
+document.getElementById("content").innerHTML=
+"<h2>No scores found</h2>";
+return;
+}
+
+const res = await fetch(
+"https://eventhive-bxaw.onrender.com/results"
+);
+
+const results = await res.json();
+
+let scoreFound=null;
+
+results.forEach(ev=>{
+
+if(ev.event===user.event){
+
+ev.leaderboard.forEach(team=>{
+
+if(
+team.team.trim().toLowerCase()===
+user.team_name.trim().toLowerCase()
+){
+scoreFound=team.score;
+}
+
+});
+
+}
+
+});
+
+if(scoreFound!==null){
+
+document.getElementById("content").innerHTML=`
+<h2>Judge Scores</h2>
 <div class="bg-white p-6 rounded shadow">
-
-<p>
-Event:
-<b>${data.event}</b>
-</p>
-
-<p>
-Judge1:
-${data.judge1}
-</p>
-
-<p>
-Judge2:
-${data.judge2}
-</p>
-
-<p class="text-xl font-bold">
-Total:
-${data.total}
-</p>
-
+<p><b>Event:</b> ${user.event}</p>
+<p><b>Team:</b> ${user.team_name}</p>
+<p><b>Total Score:</b> ${scoreFound}</p>
 </div>
 `;
+
+}else{
+
+document.getElementById("content").innerHTML=`
+<h2>No Scores Found</h2>
+`;
+
+}
 
 }
 
