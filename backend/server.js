@@ -1428,21 +1428,20 @@ doc.end();
 
 app.get("/my-qr/:email", async (req,res)=>{
 
-const email = req.params.email;
+const email=req.params.email;
 
 const { data, error } = await supabase
 .from("users")
 .select("email,event,qr_code")
 .eq("email", email)
 .order("created_at",{ascending:false})
-.limit(1)
-.single();
+.limit(1);
 
-if(error || !data){
+if(error || !data || data.length===0){
 return res.json(null);
 }
 
-res.json(data);
+res.json(data[0]);
 
 });
 
