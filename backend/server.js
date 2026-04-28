@@ -1426,21 +1426,34 @@ doc.end();
 
 });
 
-app.get("/my-qr/:email", async (req,res)=>{
+app.get("/my-qr/:email", async (req, res) => {
+  try {
+    const email = req.params.email.trim().toLowerCase();
 
-const email=req.params.email;
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", email);
 
-const { data, error } = await supabase
-.from("users")
-.select("*")
-.ilike("email", email);
+    console.log("Email:", email);
+    console.log("Data:", data);
+    console.log("Error:", error);
 
-if(error){
-return res.json(error);
-}
+    if (error) {
+      return res.status(500).json(error);
+    }
 
-res.json(data);
+    if (!data || data.length === 0) {
+      return res.json(null);
+    }
 
+    // latest registration
+    res.json(data[data.length - 1]);
+
+  } catch(err){
+    console.log(err);
+    res.status(500).json({error: err.message});
+  }
 });
 
 app.get("/my-scores/:email", async(req,res)=>{
