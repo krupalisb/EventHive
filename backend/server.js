@@ -1430,23 +1430,24 @@ app.get("/my-qr/:email", async (req,res)=>{
 
 try{
 
-const email=req.params.email;
+const email=req.params.email.trim();
 
-const { data,error } = await supabase
-.from("users")   // FIXED
-.select("name,event,qr_code")
-.eq("email",email)
-.limit(1);
+const { data, error } = await supabase
+.from("users")
+.select("*")
+.eq("email", email)
+.single();
 
-if(error || !data.length){
-return res.json({
-name:"No QR Found",
-event:"",
-qr_code:""
-});
+if(error){
+console.log(error);
+return res.json(null);
 }
 
-res.json(data[0]);
+res.json({
+name:data.name,
+event:data.event,
+qr_code:data.qr_code
+});
 
 }catch(err){
 console.log(err);
