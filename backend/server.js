@@ -1551,14 +1551,55 @@ try{
 
 const email=req.params.email;
 
-const {data,error}=await supabase
-.from("user_certificates")
+/* user registrations */
+const {data:users}=await supabase
+.from("users")
 .select("*")
 .eq("email",email);
 
-if(error) throw error;
+/* live results */
+const {data:results}=await supabase
+.from("results")
+.select("*");
 
-res.json(data);
+let certificates=[];
+
+users.forEach(u=>{
+
+let certType="participant";
+
+results.forEach(r=>{
+
+if(r.event===u.event){
+
+if(
+r.winner &&
+r.winner.members.some(
+m=>m.toLowerCase()===u.name.toLowerCase()
+)){
+certType="1st place";
+}
+
+else if(
+r.runner &&
+r.runner.members.some(
+m=>m.toLowerCase()===u.name.toLowerCase()
+)){
+certType="2nd place";
+}
+
+}
+
+});
+
+certificates.push({
+event:u.event,
+certificate_type:certType
+});
+
+});
+
+res.json(certificates);
 
 }
 
