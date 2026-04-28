@@ -312,22 +312,51 @@ ${a.title}
 
 async function loadQR(){
 
-const res=
-await fetch(
+try{
+
+const res = await fetch(
 `https://eventhive-bxaw.onrender.com/my-qr/${email}`
 );
 
-const data=
-await res.json();
+const data = await res.json();
+
+if(!data || !data.qr_code){
+
+document.getElementById(
+"qrSection"
+).innerHTML = `
+<h3>No QR Pass Found</h3>
+<p>Please register for an event first.</p>
+`;
+
+return;
+
+}
+
+document.getElementById(
+"qrSection"
+).innerHTML = `
+<h3>${email}</h3>
+<p>${data.event || "Registered Event"}</p>
+
+<img 
+src="${data.qr_code}" 
+width="220"
+class="mt-4"
+>
+`;
+
+}
+catch(error){
 
 document.getElementById(
 "qrSection"
 ).innerHTML=
-`
-<h3>${data.name}</h3>
-<p>${data.event}</p>
-<img src="${data.qr_code}" width="220">
-`;
+"Unable to load QR Pass";
+
+console.log(error);
+
+}
 
 }
 
