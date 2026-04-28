@@ -1292,9 +1292,7 @@ req.query.email;
 const event=
 req.query.event;
 
-const type=
-req.query.type || "Participant";
-
+const type=req.query.type || "Participation";
 
 // find user
 const {data:users}=

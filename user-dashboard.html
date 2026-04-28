@@ -284,28 +284,26 @@ html || "No scores published yet";
 }
 async function loadCertificates(){
 
-const res = await fetch(
+const res=await fetch(
 `https://eventhive-bxaw.onrender.com/my-certificates/${email}`
 );
 
-let data = await res.json();
+let data=await res.json();
 
 const rank={
-"Participation":1,
 "Participant":1,
+"Participation":1,
 "2nd place":2,
 "1st place":3
 };
 
-/* Keep highest certificate per event */
 const best={};
 
 data.forEach(c=>{
 
 if(
 !best[c.event] ||
-rank[c.certificate_type] >
-rank[best[c.event].certificate_type]
+rank[c.type] > rank[best[c.event].type]
 ){
 best[c.event]=c;
 }
@@ -314,26 +312,22 @@ best[c.event]=c;
 
 data=Object.values(best);
 
-document.getElementById("certList").innerHTML =
+document.getElementById("certList").innerHTML=
 data.map(c=>`
 
 <div class="bg-white p-4 mb-3 rounded shadow">
 
 <b>${c.event}</b><br>
 
-${c.certificate_type}
+${c.type}
 
 <br><br>
 
-<button
-onclick="
+<button onclick="
 window.open(
-'https://eventhive-bxaw.onrender.com/download-certificate?email=${email}&event=${c.event}&type=${c.certificate_type}'
-)"
-class="bg-green-500 text-white px-4 py-2 rounded">
-
+'https://eventhive-bxaw.onrender.com/download-certificate?email=${email}&event=${c.event}&type=${c.type}'
+)">
 Download Certificate
-
 </button>
 
 </div>
