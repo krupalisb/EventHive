@@ -1430,31 +1430,27 @@ app.get("/my-qr/:email", async (req,res)=>{
 
 try{
 
-const email = req.params.email;
+const email=req.params.email;
 
-const { data, error } = await supabase
-.from("users")
-.select("name, qr_code, event")
-.eq("email", email);
+const { data,error } = await supabase
+.from("registrations")   // <-- change from users
+.select("name,event,qr_code")
+.eq("email",email)
+.limit(1);
 
-if(error || !data || data.length===0){
+if(error || !data.length){
 return res.json({
-name:"Not found",
+name:"No QR Found",
 event:"",
 qr_code:""
 });
 }
 
-res.json(data[0]);   // first matching registration
+res.json(data[0]);
 
 }catch(err){
 console.log(err);
-
-res.json({
-name:"Error",
-event:"",
-qr_code:""
-});
+res.json(null);
 }
 
 });
