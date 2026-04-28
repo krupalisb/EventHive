@@ -199,64 +199,55 @@ ${r.winner?.team || "-"}
 
 async function loadScores(){
 
-const userRes=await fetch(
-`https://eventhive-bxaw.onrender.com/my-qr/${email}`
+const res1=await fetch(
+`https://eventhive-bxaw.onrender.com/my-events/${email}`
 );
 
-const user=await userRes.json();
+const myEvents=await res1.json();
 
-if(!user){
-document.getElementById("scoreBox").innerHTML=
-"No scores found";
-return;
-}
-
-const res=await fetch(
+const res2=await fetch(
 "https://eventhive-bxaw.onrender.com/results"
 );
 
-const results=await res.json();
+const results=await res2.json();
 
-let scoreFound=null;
+let html="";
+
+myEvents.forEach(reg=>{
 
 results.forEach(ev=>{
 
-if(ev.event===user.event){
+if(ev.event===reg.event){
 
 ev.leaderboard.forEach(team=>{
 
 if(
-team.team.trim().toLowerCase()===
-user.team_name.trim().toLowerCase()
+team.team.toLowerCase().trim()===
+reg.team_name.toLowerCase().trim()
 ){
-scoreFound=team.score;
-}
 
-});
-
-}
-
-});
-
-if(scoreFound!==null){
-
-document.getElementById("scoreBox").innerHTML=`
-<div class="bg-white p-6 rounded shadow">
-<p><b>Event:</b> ${user.event}</p>
-<p><b>Team:</b> ${user.team_name}</p>
-<p><b>Total Score:</b> ${scoreFound}</p>
+html += `
+<div class="bg-white p-6 mb-4 rounded shadow">
+<p><b>Event:</b> ${reg.event}</p>
+<p><b>Team:</b> ${reg.team_name}</p>
+<p><b>Score:</b> ${team.score}</p>
 </div>
 `;
 
-}else{
+}
+
+});
+
+}
+
+});
+
+});
 
 document.getElementById("scoreBox").innerHTML=
-"No score published yet";
+html || "No scores published yet";
 
 }
-
-}
-
 async function loadCertificates(){
 
 const res=
