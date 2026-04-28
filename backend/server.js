@@ -1551,41 +1551,50 @@ try{
 
 const email=req.params.email;
 
-/* user registrations */
-const {data:users}=await supabase
+/* all events user registered for */
+const {data:registrations,error:userErr}=await supabase
 .from("users")
-.select("*")
+.select("name,event,team_name")
 .eq("email",email);
 
+if(userErr) throw userErr;
+
+
 /* live results */
-const {data:results}=await supabase
+const {data:results,error:resultErr}=await supabase
 .from("results")
 .select("*");
 
+if(resultErr) throw resultErr;
+
+
 let certificates=[];
 
-users.forEach(u=>{
+registrations.forEach(reg=>{
 
-let certType="participant";
+let certificateType="Participation";
+let position="-";
 
 results.forEach(r=>{
 
-if(r.event===u.event){
+if(r.event===reg.event){
 
 if(
 r.winner &&
-r.winner.members.some(
-m=>m.toLowerCase()===u.name.toLowerCase()
-)){
-certType="1st place";
+r.winner.team?.toLowerCase()===
+reg.team_name?.toLowerCase()
+){
+certificateType="1st Place";
+position=1;
 }
 
 else if(
 r.runner &&
-r.runner.members.some(
-m=>m.toLowerCase()===u.name.toLowerCase()
-)){
-certType="2nd place";
+r.runner.team?.toLowerCase()===
+reg.team_name?.toLowerCase()
+){
+certificateType="2nd Place";
+position=2;
 }
 
 }
@@ -1593,8 +1602,9 @@ certType="2nd place";
 });
 
 certificates.push({
-event:u.event,
-certificate_type:certType
+event:reg.event,
+certificate_type:certificateType,
+position:position
 });
 
 });
