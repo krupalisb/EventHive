@@ -1546,78 +1546,33 @@ message:"Updated ✅"
 });
 
 app.get("/my-certificates/:email", async (req,res)=>{
-
 try{
 
 const email=req.params.email;
 
-/* all events user registered for */
-const {data:registrations,error:userErr}=await supabase
-.from("users")
-.select("name,event,team_name")
+const { data,error } = await supabase
+.from("user_certificates")
+.select("event,certificate_type")
 .eq("email",email);
 
-if(userErr) throw userErr;
+if(error) throw error;
 
-
-/* live results */
-const {data:results,error:resultErr}=await supabase
-.from("results")
-.select("*");
-
-if(resultErr) throw resultErr;
-
-
-let certificates=[];
-
-registrations.forEach(reg=>{
-
-let certificateType="Participation";
-let position="-";
-
-results.forEach(r=>{
-
-if(r.event===reg.event){
-
-if(
-r.winner &&
-r.winner.team?.toLowerCase()===
-reg.team_name?.toLowerCase()
-){
-certificateType="1st Place";
-position=1;
+if(!data || data.length===0){
+return res.json([]);
 }
 
-else if(
-r.runner &&
-r.runner.team?.toLowerCase()===
-reg.team_name?.toLowerCase()
-){
-certificateType="2nd Place";
-position=2;
-}
+const formatted=data.map(item=>({
+event:item.event,
+type:item.certificate_type
+}));
+
+res.json(formatted);
 
 }
-
-});
-
-certificates.push({
-event:reg.event,
-certificate_type:certificateType,
-position:position
-});
-
-});
-
-res.json(certificates);
-
-}
-
 catch(err){
 console.log(err);
 res.json([]);
 }
-
 });
 
 app.delete("/user/:id", async(req,res)=>{

@@ -308,14 +308,20 @@ data.map(c=>`
 
 <b>${c.event}</b><br>
 
-${c.certificate_type}
+${
+c.type==="winner"
+? "1st Place"
+: c.type==="runner"
+? "2nd Place"
+: "Participation"
+}
 
 <br><br>
 
 <button
 onclick="
 window.open(
-'https://eventhive-bxaw.onrender.com/download-certificate?email=${email}&event=${c.event}&type=${c.certificate_type}'
+'https://eventhive-bxaw.onrender.com/download-certificate?email=${email}&event=${c.event}&type=${c.type}'
 )
 "
 class="bg-green-500 text-white px-4 py-2 rounded">
