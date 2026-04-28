@@ -376,38 +376,40 @@ const res = await fetch(
 
 const data = await res.json();
 
-if(!data || !data.qr_code){
+if(!data || data.length===0){
 
-document.getElementById(
-"qrSection"
-).innerHTML = `
+document.getElementById("qrSection").innerHTML=`
 <h3>No QR Pass Found</h3>
 <p>Please register for an event first.</p>
 `;
 
 return;
-
 }
 
-document.getElementById(
-"qrSection"
-).innerHTML = `
-<h3>${email}</h3>
-<p>${data.event || "Registered Event"}</p>
+document.getElementById("qrSection").innerHTML=
+data.map(q=>`
 
-<img 
-src="${data.qr_code}" 
+<div class="bg-white p-4 mb-4 rounded shadow">
+
+<h3>${q.email}</h3>
+
+<p>${q.event}</p>
+
+<img
+src="${q.qr_code}"
 width="220"
 class="mt-4"
 >
-`;
+
+</div>
+
+`).join("");
 
 }
+
 catch(error){
 
-document.getElementById(
-"qrSection"
-).innerHTML=
+document.getElementById("qrSection").innerHTML=
 "Unable to load QR Pass";
 
 console.log(error);

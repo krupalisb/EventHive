@@ -1438,7 +1438,6 @@ app.get("/my-qr/:email", async (req, res) => {
       .select("*")
       .eq("email", email)
       .order("created_at", { ascending: false })
-      .limit(1);
 
     if (error) return res.status(500).json(error);
 
@@ -1446,7 +1445,7 @@ app.get("/my-qr/:email", async (req, res) => {
       return res.json(null);
     }
 
-    res.json(data[0]); // only latest record
+    res.json(data);
 
   } catch(err){
     res.status(500).json({ error: err.message });
