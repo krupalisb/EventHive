@@ -25,7 +25,10 @@ auth:{
 user:process.env.EMAIL_USER,
 pass:process.env.EMAIL_PASS
 },
-family:4
+family:4,
+connectionTimeout:30000,
+greetingTimeout:30000,
+socketTimeout:30000
 });
 
 transporter.verify(function(error, success){
