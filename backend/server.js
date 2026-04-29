@@ -20,16 +20,19 @@ const supabase = createClient(
 
 // ================= EMAIL =================
 const transporter = nodemailer.createTransport({
-host: "smtp.gmail.com",
-port: 587,
-secure: false,
-requireTLS: true,
+service:"gmail",
 auth:{
-user: process.env.EMAIL_USER,
-pass: process.env.EMAIL_PASS
+user:process.env.EMAIL_USER,
+pass:process.env.EMAIL_PASS
 },
-tls:{
 family:4
+});
+
+transporter.verify(function(error, success){
+if(error){
+console.log("Mail Error:",error);
+}else{
+console.log("Mail Server Ready ✅");
 }
 });
 
