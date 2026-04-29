@@ -39,14 +39,6 @@ pass:process.env.EMAIL_PASS
 }
 });
 
-transporter.verify(function(error, success){
-if(error){
-console.log("Mail Error:", error);
-}else{
-console.log("Mail Server Ready ✅");
-}
-});
-
 // ================= HELPERS =================
 async function isEmailEnabled() {
   const { data } = await supabase.from("settings").select("*").limit(1);
