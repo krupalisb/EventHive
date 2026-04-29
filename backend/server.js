@@ -20,11 +20,17 @@ const supabase = createClient(
 
 // ================= EMAIL =================
 const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
+host: "smtp.gmail.com",
+port: 587,
+secure: false,
+requireTLS: true,
+auth:{
+user: process.env.EMAIL_USER,
+pass: process.env.EMAIL_PASS
+},
+tls:{
+family:4
+}
 });
 
 // ================= HELPERS =================
@@ -53,7 +59,6 @@ app.get("/", (req, res) => res.send("Backend running 🚀"));
 // ================= DASHBOARD =================
 app.get("/dashboard", async (req, res) => {
 try{
-
 const { data: users } =
 await supabase
 .from("users")
@@ -781,48 +786,47 @@ app.get("/entries", async (req, res) => {
 });
 
 // ================= REMINDERS =================
-app.post("/send-reminders", async (req, res) => {
-  try {
-    if (!(await isEmailEnabled())) {
-      return res.json({ message: "Emails are disabled ❌" });
-    }
-
-    const people = await getAllPeople();
-
-    for (let p of people) {
-
+app.post("/send-reminders", async (req,res)=>{
 try{
 
-await transporter.sendMail({
+if(!(await isEmailEnabled())){
+return res.json({
+message:"Emails are disabled ❌"
+});
+}
+
+const people=await getAllPeople();
+
+await Promise.allSettled(
+
+people.map(p=>
+transporter.sendMail({
 to:p.email,
 subject:"Event Reminder 📢",
-html:`<p>Hello ${p.name}, don't forget your event!</p>`
-});
+html:`
+<p>Hello ${p.name},</p>
+<p>Don't forget your event!</p>
+`
+})
+)
 
-console.log("Reminder sent:",p.email);
-
-}
-catch(mailErr){
-
-console.log(
-"Reminder failed for",
-p.email,
-mailErr.message
 );
 
-/* continue sending others */
-}
-
-}
-
-    res.json({ message: "Reminders sent ✅" });
-
-  } catch (err) {
-    console.log(err);
-    res.json({ message: "Error sending reminders ❌" });
-  }
+res.json({
+message:"Reminders sent ✅"
 });
 
+}
+catch(err){
+
+console.log(err);
+
+res.json({
+message:"Error sending reminders ❌"
+});
+
+}
+});
 
 // ================= CERTIFICATES =================
 app.post("/send-certificates", async (req, res) => {
@@ -1673,24 +1677,6 @@ message:"Delete failed ❌"
 }
 });
 
-app.get("/test-email", async(req,res)=>{
-try{
-
-await transporter.sendMail({
-to: process.env.EMAIL_USER,
-subject:"Test Mail",
-html:"Email is working"
-});
-
-res.send("Email works ✅");
-
-}catch(err){
-
-console.log(err);
-res.send(err.message);
-
-}
-});
 
 // ================= SERVER =================
 app.listen(5000, () => console.log("Server running 🚀"));
