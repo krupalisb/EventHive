@@ -1141,14 +1141,22 @@ try{
 const pdfData=
 Buffer.concat(buffers);
 
-await transporter.sendMail({
-to:member.email,
-subject:`Certificate - ${event}`,
-html:`<p>Hello ${member.name}, your certificate is attached.</p>`,
-attachments:[
+await emailApi.sendTransacEmail({
+sender:{
+name:"EventHive",
+email:"nibblesandnature@gmail.com"
+},
+to:[
 {
-filename:"certificate.pdf",
-content:pdfData
+email: member.email
+}
+],
+subject:`Certificate - ${event}`,
+htmlContent:`<p>Hello ${member.name}, your certificate is attached.</p>`,
+attachment:[
+{
+content: pdfData.toString("base64"),
+name:"certificate.pdf"
 }
 ]
 });
