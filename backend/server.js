@@ -934,7 +934,7 @@ if(!existing){
 existing={
 team:team,
 members:[],
-score:scoreMap[team] || 0
+score:0
 };
 
 grouped[u.event].push(existing);
@@ -945,6 +945,8 @@ existing.members.push({
 name:u.name,
 email:u.email
 });
+
+existing.score += scoreMap[u.id] || 0;
 
 });
 
