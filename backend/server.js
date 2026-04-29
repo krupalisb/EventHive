@@ -1673,5 +1673,24 @@ message:"Delete failed ❌"
 }
 });
 
+app.get("/test-email", async(req,res)=>{
+try{
+
+await transporter.sendMail({
+to: process.env.EMAIL_USER,
+subject:"Test Mail",
+html:"Email is working"
+});
+
+res.send("Email works ✅");
+
+}catch(err){
+
+console.log(err);
+res.send(err.message);
+
+}
+});
+
 // ================= SERVER =================
 app.listen(5000, () => console.log("Server running 🚀"));
