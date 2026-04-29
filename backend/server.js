@@ -790,12 +790,30 @@ app.post("/send-reminders", async (req, res) => {
     const people = await getAllPeople();
 
     for (let p of people) {
-      await transporter.sendMail({
-        to: p.email,
-        subject: "Event Reminder 📢",
-        html: `<p>Hello ${p.name}, don't forget your event!</p>`
-      });
-    }
+
+try{
+
+await transporter.sendMail({
+to:p.email,
+subject:"Event Reminder 📢",
+html:`<p>Hello ${p.name}, don't forget your event!</p>`
+});
+
+console.log("Reminder sent:",p.email);
+
+}
+catch(mailErr){
+
+console.log(
+"Reminder failed for",
+p.email,
+mailErr.message
+);
+
+/* continue sending others */
+}
+
+}
 
     res.json({ message: "Reminders sent ✅" });
 
@@ -813,20 +831,15 @@ try{
 const path=require("path");
 const PDFDocument=require("pdfkit");
 
-
-// users
 const {data:users}=await supabase
 .from("users")
 .select("id,name,email,event,team_name");
 
-
-// scores
 const {data:scores}=await supabase
 .from("scores")
 .select("user_id,marks");
 
 
-// TEAM TOTAL SCORES
 const scoreMap={};
 
 scores.forEach(s=>{
@@ -837,7 +850,6 @@ scoreMap[s.user_id]+=s.marks;
 });
 
 
-// GROUP TEAMS BY EVENT
 const grouped={};
 
 users.forEach(u=>{
@@ -861,9 +873,7 @@ members:[],
 score:scoreMap[team] || 0
 };
 
-grouped[u.event].push(
-existing
-);
+grouped[u.event].push(existing);
 
 }
 
@@ -876,14 +886,11 @@ email:u.email
 
 
 
-
-// PROCESS EVENTS
 for(let event in grouped){
 
 let list=
 grouped[event].sort(
-(a,b)=>
-b.score-a.score
+(a,b)=>b.score-a.score
 );
 
 
@@ -906,7 +913,6 @@ for(const role of roles){
 
 const doc=
 new PDFDocument({
-
 size:"A4",
 layout:"landscape",
 margin:0
@@ -920,7 +926,6 @@ buffers.push.bind(buffers)
 );
 
 
-// CERTIFICATE BACKGROUND
 let bgPath="";
 
 if(role==="1st place"){
@@ -965,7 +970,6 @@ __dirname,
 );
 
 
-// heading
 doc.font("Times-Bold")
 .fontSize(32)
 .fillColor("#8B7500")
@@ -980,7 +984,6 @@ align:"center"
 );
 
 
-// presented to
 doc.font("custom")
 .fontSize(20)
 .fillColor("#222")
@@ -995,7 +998,6 @@ align:"center"
 );
 
 
-// member name
 doc.font("Times-BoldItalic")
 .fontSize(34)
 .fillColor("#000")
@@ -1010,13 +1012,11 @@ align:"center"
 );
 
 
-// underline
 doc.moveTo(280,305)
 .lineTo(560,305)
 .stroke();
 
 
-// award
 doc.font("custom")
 .fontSize(20)
 .text(
@@ -1032,7 +1032,6 @@ align:"center"
 );
 
 
-// event
 doc.font("Times-Bold")
 .fontSize(26)
 .fillColor("#7A0019")
@@ -1047,7 +1046,6 @@ align:"center"
 );
 
 
-// subtitle
 doc.font("custom")
 .fontSize(15)
 .text(
@@ -1061,7 +1059,6 @@ align:"center"
 );
 
 
-// date
 doc.fontSize(13)
 .text(
 "Date: April 2026",
@@ -1070,7 +1067,6 @@ doc.fontSize(13)
 );
 
 
-// seal
 doc.image(
 path.join(
 __dirname,
@@ -1084,7 +1080,6 @@ width:85
 );
 
 
-// signature
 doc.image(
 path.join(
 __dirname,
@@ -1098,7 +1093,6 @@ width:100
 );
 
 
-// label
 doc.fontSize(12)
 .text(
 "Authorized Signature",
@@ -1110,21 +1104,21 @@ align:"center"
 }
 );
 
-// SEND MAIL AFTER PDF FINISHES
-doc.on(
-"end",
-async()=>{
+
+/* FIXED PART */
+await new Promise((resolve,reject)=>{
+
+doc.on("end",async()=>{
+
+try{
+
 const pdfData=
-Buffer.concat(
-buffers
-);
+Buffer.concat(buffers);
 
 await transporter.sendMail({
 to:member.email,
-subject:
-`Certificate - ${event}`,
-html:
-`<p>Hello ${member.name}, your certificate is attached.</p>`,
+subject:`Certificate - ${event}`,
+html:`<p>Hello ${member.name}, your certificate is attached.</p>`,
 attachments:[
 {
 filename:"certificate.pdf",
@@ -1135,25 +1129,39 @@ content:pdfData
 
 await supabase
 .from("user_certificates")
-.insert([
-{
+.upsert(
+[{
 email:member.email,
 event:event,
 certificate_type:role
-}
-]);
-
+}],
+{
+onConflict:
+"email,event,certificate_type"
 }
 );
 
+resolve();
+
+}
+catch(err){
+reject(err);
+}
+
+});
 
 doc.end();
 
-}
+});
+/* FIXED PART ENDS */
+
 
 }
 
 }
+
+}
+
 }
 
 
