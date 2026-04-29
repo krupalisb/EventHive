@@ -816,6 +816,7 @@ await Promise.allSettled(
 people.map(p=>
 emailApi.sendTransacEmail({
 sender:{
+name:"EventHive",
 email:"nibblesandnature@gmail.com"
 },
 to:[
