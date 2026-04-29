@@ -1201,19 +1201,31 @@ name:"certificate.pdf"
 ]
 });
 
-await supabase
+const { data: existingCert } = await supabase
 .from("user_certificates")
-.upsert(
-[{
-email:member.email,
-event:event,
-certificate_type:role
-}],
+.select("id")
+.eq("email", member.email)
+.eq("event", event)
+.eq("certificate_type", role)
+.maybeSingle();
+
+if(!existingCert){
+
+const { error } = await supabase
+.from("user_certificates")
+.insert([
 {
-onConflict:
-"email,event,certificate_type"
+email: member.email,
+event: event,
+certificate_type: role
 }
-);
+]);
+
+if(error){
+console.log("Certificate insert error:", error);
+}
+
+}
 
 resolve();
 
