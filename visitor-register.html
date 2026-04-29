@@ -69,6 +69,16 @@ document.getElementById(
 "msg"
 ).innerText=data.message;
 
+localStorage.setItem(
+"visitorEmail",
+document.getElementById("email").value
+);
+
+setTimeout(()=>{
+window.location.href=
+"visitor-dashboard.html";
+},1500);
+
 }
 );
 
