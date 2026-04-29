@@ -1707,22 +1707,5 @@ message:"Delete failed ❌"
 }
 });
 
-app.get("/test-email", async(req,res)=>{
-try{
-await transporter.sendMail({
-from: process.env.EMAIL_USER,
-to: "nibblesandnature@gmail.com",
-subject:"Brevo Test",
-text:"Test email working"
-});
-
-res.send("Email sent");
-}catch(err){
-console.log(err);
-res.send("Failed");
-}
-});
-
-
 // ================= SERVER =================
 app.listen(5000, () => console.log("Server running 🚀"));
