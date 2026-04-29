@@ -15,10 +15,11 @@
 Add Event
 </h2>
 
-<input
+<select
 id="name"
-placeholder="Event Name"
 class="w-full p-2 border mb-3">
+<option value="">Select Event</option>
+</select>
 
 <input
 id="eventDate"
@@ -158,6 +159,19 @@ await fetch(
 
 const data=
 await res.json();
+
+const dropdown =
+document.getElementById("name");
+
+dropdown.innerHTML =
+'<option value="">Select Event</option>';
+
+data.forEach(e=>{
+dropdown.innerHTML +=
+`<option value="${e.name}">
+${e.name}
+</option>`;
+});
 
 
 document.getElementById(
