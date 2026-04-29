@@ -962,14 +962,16 @@ grouped[event].sort(
 
 for(let i=0;i<list.length;i++){
 
-let roles=["Participant"];
+let roles=[];
 
 if(i===0){
 roles.push("1st place");
 }
-
 else if(i===1){
 roles.push("2nd place");
+}
+else{
+roles.push("Participant");
 }
 
 
