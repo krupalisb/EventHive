@@ -1,5 +1,15 @@
 require("dotenv").config();
 
+const SibApiV3Sdk = require("sib-api-v3-sdk");
+
+const client = SibApiV3Sdk.ApiClient.instance;
+
+client.authentications["api-key"].apiKey =
+process.env.BREVO_API_KEY;
+
+const emailApi =
+new SibApiV3Sdk.TransactionalEmailsApi();
+
 const express = require("express");
 const cors = require("cors");
 const PDFDocument = require("pdfkit");
@@ -804,10 +814,17 @@ const people=await getAllPeople();
 await Promise.allSettled(
 
 people.map(p=>
-transporter.sendMail({
-to:p.email,
+emailApi.sendTransacEmail({
+sender:{
+email:"nibblesandnature@gmail.com"
+},
+to:[
+{
+email:p.email
+}
+],
 subject:"Event Reminder 📢",
-html:`
+htmlContent:`
 <p>Hello ${p.name},</p>
 <p>Don't forget your event!</p>
 `
@@ -1685,7 +1702,7 @@ app.get("/test-email", async(req,res)=>{
 try{
 await transporter.sendMail({
 from: process.env.EMAIL_USER,
-to: "sbkrupali@gmail.com",
+to: "nibblesandnature@gmail.com",
 subject:"Brevo Test",
 text:"Test email working"
 });
