@@ -20,21 +20,13 @@ const supabase = createClient(
 
 // ================= EMAIL =================
 const transporter = nodemailer.createTransport({
-host:"smtp.gmail.com",
-port:587,
-secure:false,
-requireTLS:true,
+host: "smtp-relay.brevo.com",
+port: 587,
+secure: false,
 auth:{
-user:process.env.EMAIL_USER,
-pass:process.env.EMAIL_PASS
-},
-tls:{
-family:4,
-rejectUnauthorized:false
-},
-connectionTimeout:30000,
-greetingTimeout:30000,
-socketTimeout:30000
+user: process.env.EMAIL_USER,
+pass: process.env.EMAIL_PASS
+}
 });
 
 transporter.verify(function(error, success){
