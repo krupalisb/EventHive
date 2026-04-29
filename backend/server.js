@@ -21,28 +21,17 @@ const supabase = createClient(
 // ================= EMAIL =================
 const transporter = nodemailer.createTransport({
 host:"smtp-relay.brevo.com",
-port:2525,
+port:587,
 secure:false,
 auth:{
 user:process.env.EMAIL_USER,
 pass:process.env.EMAIL_PASS
-},
-connectionTimeout:60000,
-greetingTimeout:60000,
-socketTimeout:60000
-});
-
-transporter.verify(function(error, success){ /*
-transporter.verify(function(error, success){
-if(error){
-console.log("Mail Error:",error);
-}else{
-console.log("Mail Server Ready ✅");
 }
 });
-*/
+
+transporter.verify(function(error, success){
 if(error){
-console.log("Mail Error:",error);
+console.log("Mail Error:", error);
 }else{
 console.log("Mail Server Ready ✅");
 }
