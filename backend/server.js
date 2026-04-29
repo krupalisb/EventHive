@@ -201,35 +201,30 @@ qrCode.split(
 "base64"
 );
 
-await transporter.sendMail({
-
-to:member.email,
-
-subject:
-"Event Registration Successful 🎉",
-
-html:`
-<h2>EventHive Registration</h2>
-
-<p>Hello ${member.name},</p>
-
-<p>
-You are registered for
-<b>${event}</b>
-as part of team
-<b>${teamName}</b>.
-</p>
-
-<p>Your entry QR is attached.</p>
-`,
-
-attachments:[
+await emailApi.sendTransacEmail({
+sender:{
+name:"EventHive",
+email:"nibblesandnature@gmail.com"
+},
+to:[
 {
-filename:"qr.png",
-content:qrBuffer
+email:member.email
+}
+],
+subject:"Event Registration Successful 🎉",
+htmlContent:`
+<h2>EventHive Registration</h2>
+<p>Hello ${member.name},</p>
+<p>You are registered for <b>${event}</b>
+as part of team <b>${teamName}</b>.</p>
+<p>Your QR is attached.</p>
+`,
+attachment:[
+{
+content: qrBuffer.toString("base64"),
+name:"qr.png"
 }
 ]
-
 });
 
 }
@@ -300,21 +295,29 @@ app.post("/visitor-register", async (req, res) => {
         "base64"
       );
 
-      await transporter.sendMail({
-        to: email,
-        subject: "Entry Pass 🎟️",
-        html: `
-          <h2>Visitor Entry Pass</h2>
-          <p>Hello ${name},</p>
-          <p>Use this same QR for event entry.</p>
-        `,
-        attachments: [
-          {
-            filename: "visitor-qr.png",
-            content: qrBuffer
-          }
-        ]
-      });
+      await emailApi.sendTransacEmail({
+sender:{
+name:"EventHive",
+email:"nibblesandnature@gmail.com"
+},
+to:[
+{
+email:email
+}
+],
+subject:"Entry Pass 🎟️",
+htmlContent:`
+<h2>Visitor Entry Pass</h2>
+<p>Hello ${name},</p>
+<p>Your QR is attached.</p>
+`,
+attachment:[
+{
+content: qrBuffer.toString("base64"),
+name:"visitor-qr.png"
+}
+]
+});
     }
 
     res.json({
@@ -660,38 +663,81 @@ res.json([]);
 
 // ================= ANNOUNCEMENTS =================
 app.post("/announce", async (req, res) => {
-  if (!(await isEmailEnabled())) return res.json({ message: "Emails OFF" });
 
-  const {title,message,event}=req.body;
+try{
 
-  await supabase.from("announcements").insert([{ title, message }]);
+if(!(await isEmailEnabled())){
+return res.json({
+message:"Emails OFF"
+});
+}
 
-  let people;
+const {
+title,
+message,
+event
+}=req.body;
 
-  if(event && event!=="all"){
+await supabase
+.from("announcements")
+.insert([
+{
+title,
+message
+}
+]);
 
-  const {data}=await supabase
-  .from("users")
-  .select("name,email")
-  .eq("event",event);
+let people;
 
-  people=data;
+if(event && event!=="all"){
 
-  }else{
+const {data}=await supabase
+.from("users")
+.select("name,email")
+.eq("event",event);
 
-  people=await getAllPeople();
+people=data;
 
-  }
+}else{
 
-  for (let p of people) {
-    await transporter.sendMail({
-      to: p.email,
-      subject: title,
-      html: message
-    });
-  }
+people=await getAllPeople();
 
-  res.json({ message: "Sent" });
+}
+
+
+for(let p of people){
+
+await emailApi.sendTransacEmail({
+sender:{
+name:"EventHive",
+email:"nibblesandnature@gmail.com"
+},
+to:[
+{
+email:p.email
+}
+],
+subject:title,
+htmlContent:message
+});
+
+}
+
+res.json({
+message:"Sent ✅"
+});
+
+}
+catch(err){
+
+console.log(err);
+
+res.json({
+message:"Error ❌"
+});
+
+}
+
 });
 
 app.get("/announcements", async (req, res) => {
