@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Visitor Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+<div class="flex">
+
+<div class="w-64 h-screen bg-purple-900 text-white p-5">
+<h1 class="text-2xl font-bold mb-8">
+Visitor Panel
+</h1>
+
+<ul class="space-y-4">
+<li onclick="showSection('pass')" class="cursor-pointer">
+🎫 My Pass
+</li>
+
+<li onclick="showSection('status')" class="cursor-pointer">
+✅ Entry Status
+</li>
+
+<li onclick="showSection('announcements')" class="cursor-pointer">
+🔔 Announcements
+</li>
+
+<li onclick="logout()" class="cursor-pointer text-red-300">
+Logout
+</li>
+</ul>
+
+</div>
+
+
+<div class="flex-1 p-8">
+
+<h1 class="text-3xl font-bold mb-6">
+Welcome Visitor
+</h1>
+
+
+<input
+id="visitorEmail"
+placeholder="Enter Visitor Email"
+class="border p-2 rounded w-96 mb-6">
+
+<button
+onclick="loadVisitorData()"
+class="bg-purple-600 text-white px-4 py-2 rounded ml-2">
+Load
+</button>
+
+
+<div id="passSection">
+<h2 class="text-xl font-bold mb-4">
+My Entry Pass
+</h2>
+
+<div id="qrBox"
+class="bg-white p-6 rounded shadow">
+Loading visitor pass...
+</div>
+</div>
+
+
+<div id="statusSection" style="display:none">
+<h2 class="text-xl font-bold mb-4">
+Visit Status
+</h2>
+
+<div id="statusBox"
+class="bg-white p-6 rounded shadow">
+No data
+</div>
+</div>
+
+
+<div id="announcementsSection" style="display:none">
+<h2 class="text-xl font-bold mb-4">
+Announcements
+</h2>
+
+<div id="announcementList"></div>
+</div>
+
+</div>
+</div>
+
+
+<script>
+
+window.onload=function(){
+
+const savedEmail=
+localStorage.getItem(
+"visitorEmail"
+);
+
+if(savedEmail){
+
+document.getElementById(
+"visitorEmail"
+).value=savedEmail;
+
+loadVisitorData();
+
+}
+
+};
+
+
+function showSection(section){
+
+document.getElementById("passSection").style.display="none";
+document.getElementById("statusSection").style.display="none";
+document.getElementById("announcementsSection").style.display="none";
+
+document.getElementById(
+section+"Section"
+).style.display="block";
+
+}
+
+
+function logout(){
+
+localStorage.removeItem(
+"visitorEmail"
+);
+
+window.location.href=
+"visitor.html";
+
+}
+
+
+async function loadVisitorData(){
+
+const email=
+document.getElementById(
+"visitorEmail"
+).value;
+
+const res=
+await fetch(
+"https://eventhive-bxaw.onrender.com/visitor-dashboard"
+);
+
+const data=
+await res.json();
+
+const visitor=
+data.visitors.find(
+v=>
+v.email.toLowerCase().trim()===
+email.toLowerCase().trim()
+);
+
+
+if(!visitor){
+
+document.getElementById(
+"qrBox"
+).innerHTML=
+"Visitor not found";
+
+return;
+}
+
+
+document.getElementById("qrBox").innerHTML=`
+<h3 class="font-bold mb-3">
+${visitor.name}
+</h3>
+
+<img
+src="${visitor.qr_code}"
+width="220"
+class="mt-4">
+
+<p class="mt-4">
+${visitor.email}
+</p>
+`;
+
+
+document.getElementById("statusBox").innerHTML=`
+<p>
+Registration: ✅ Confirmed
+</p>
+
+<p class="mt-3">
+Entry:
+${visitor.entry ? "✅ Checked In":"⏳ Pending"}
+</p>
+`;
+
+}
+
+
+async function loadAnnouncements(){
+
+const res=
+await fetch(
+"https://eventhive-bxaw.onrender.com/announcements"
+);
+
+const data=
+await res.json();
+
+document.getElementById(
+"announcementList"
+).innerHTML=
+data.map(a=>`
+<div class="bg-white p-4 mb-3 rounded shadow">
+<h3 class="font-bold">
+${a.title}
+</h3>
+<p>${a.message}</p>
+</div>
+`).join("");
+
+}
+
+
+loadAnnouncements();
+
+setInterval(
+loadAnnouncements,
+3000
+);
+
+</script>
+
+</body>
+</html>
