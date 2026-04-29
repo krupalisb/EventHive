@@ -954,6 +954,22 @@ existing.score += scoreMap[u.id] || 0;
 
 for(let event in grouped){
 
+const { data: eventInfo } = await supabase
+.from("events")
+.select("*")
+.eq("name", event)
+.maybeSingle();
+
+if(eventInfo){
+const end = new Date(
+`${eventInfo.event_date}T${eventInfo.end_time}`
+);
+
+if(new Date() <= end){
+continue; // skip certificates until this event ends
+}
+}
+
 let list=
 grouped[event].sort(
 (a,b)=>b.score-a.score
