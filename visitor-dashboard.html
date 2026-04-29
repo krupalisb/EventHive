@@ -44,7 +44,7 @@ Welcome Visitor
 
 <input
 id="visitorEmail"
-placeholder="Enter Visitor Email"
+placeholder="Enter Registered Visitor Email"
 class="border p-2 rounded w-96 mb-6">
 
 <button
@@ -152,11 +152,11 @@ await fetch(
 const data=
 await res.json();
 
-const visitor=
+const visitor =
 data.visitors.find(
-v=>
-v.email.toLowerCase().trim()===
-email.toLowerCase().trim()
+v =>
+String(v.email).trim().toLowerCase() ===
+String(email).trim().toLowerCase()
 );
 
 
