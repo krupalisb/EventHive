@@ -748,13 +748,19 @@ app.get("/announcements", async (req, res) => {
 // ================= SETTINGS =================
 // GET settings
 app.get("/settings", async (req, res) => {
+
   const { data } = await supabase
     .from("settings")
     .select("*")
     .eq("id", 1)
     .single();
 
-  res.json(data);
+  res.json({
+    email_enabled: data?.email_enabled || false,
+    festName: data?.festName || "",
+    orgName: data?.orgName || ""
+  });
+
 });
 
 // SAVE settings
