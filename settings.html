@@ -127,7 +127,13 @@ async function loadSettings() {
   const data = await res.json();
 
   document.getElementById("emailToggle").checked = data.email_enabled;
-}
+
+  document.getElementById("festName").value =
+  data.festName || "";
+
+  document.getElementById("orgName").value =
+  data.orgName || "";
+ }
 
 // SAVE SETTINGS
 async function saveSettings() {
