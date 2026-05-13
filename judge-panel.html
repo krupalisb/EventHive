@@ -43,10 +43,16 @@ Total Score:
 </p>
 
 <button
+id="saveBtn"
 onclick="submitScore()"
 class="w-full bg-blue-500 text-white p-2 rounded">
 Save / Update Scores
 </button>
+
+<p
+id="eventStatusMsg"
+class="text-red-500 text-sm mt-3 font-semibold">
+</p>
 
 </div>
 
@@ -124,6 +130,8 @@ document
 .getElementById("event")
 .value =
 selected.dataset.event;
+
+checkEventStatus(selected.dataset.event);
 
 document.getElementById(
 "judge1"
@@ -216,7 +224,66 @@ option
 
 }
 
+async function checkEventStatus(eventName){
 
+const res =
+await fetch(
+"https://eventhive-bxaw.onrender.com/event-status"
+);
+
+const events =
+await res.json();
+
+const event =
+events.find(
+e => e.name === eventName
+);
+
+const ended =
+event &&
+event.status === "Ended";
+
+document.getElementById(
+"judge1"
+).disabled = ended;
+
+document.getElementById(
+"judge2"
+).disabled = ended;
+
+document.getElementById(
+"saveBtn"
+).disabled = ended;
+
+if(ended){
+
+document.getElementById(
+"eventStatusMsg"
+).innerText =
+"This event has ended. Scores can no longer be updated.";
+
+document.getElementById(
+"saveBtn"
+).classList.add(
+"bg-gray-400"
+);
+
+}
+else{
+
+document.getElementById(
+"eventStatusMsg"
+).innerText = "";
+
+document.getElementById(
+"saveBtn"
+).classList.remove(
+"bg-gray-400"
+);
+
+}
+
+}
 
 /* SAVE */
 async function submitScore(){
