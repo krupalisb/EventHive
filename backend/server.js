@@ -771,15 +771,25 @@ app.post("/settings", async (req, res) => {
     orgName
   } = req.body;
 
-  await supabase
-  .from("settings")
-  .upsert([
-    {
+  // get existing settings row
+  const { data: existing } = await supabase
+    .from("settings")
+    .select("id")
+    .limit(1)
+    .single();
+
+  if(existing){
+
+    await supabase
+    .from("settings")
+    .update({
       email_enabled,
       festName,
       orgName
-    }
-  ]);
+    })
+    .eq("id", existing.id);
+
+  }
 
   res.json({
     message:"Settings saved ✅"
