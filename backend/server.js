@@ -757,16 +757,30 @@ app.get("/settings", async (req, res) => {
   res.json(data);
 });
 
-
 // SAVE settings
 app.post("/settings", async (req, res) => {
-  const { adminName, defaultEvent } = req.body;
 
-  await supabase.from("settings").upsert([
-    { id: 1, adminName, defaultEvent }
+  const {
+    email_enabled,
+    festName,
+    orgName
+  } = req.body;
+
+  await supabase
+  .from("settings")
+  .upsert([
+    {
+      id:1,
+      email_enabled,
+      festName,
+      orgName
+    }
   ]);
 
-  res.json({ message: "Settings saved ✅" });
+  res.json({
+    message:"Settings saved ✅"
+  });
+
 });
 
 app.delete("/delete-event/:id", async (req, res) => {
@@ -949,8 +963,6 @@ email:u.email
 existing.score += scoreMap[u.id] || 0;
 
 });
-
-
 
 for(let event in grouped){
 

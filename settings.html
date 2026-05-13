@@ -132,11 +132,21 @@ async function loadSettings() {
 // SAVE SETTINGS
 async function saveSettings() {
   const email_enabled = document.getElementById("emailToggle").checked;
+
+  const festName =
+document.getElementById("festName").value;
+
+const orgName =
+document.getElementById("orgName").value;
   
   const res = await fetch("https://eventhive-bxaw.onrender.com/settings", {
     method: "POST",
     headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({ email_enabled })
+   body: JSON.stringify({
+ email_enabled,
+ festName,
+ orgName
+})
   });
 
   const data = await res.json();
