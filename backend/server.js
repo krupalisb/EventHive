@@ -752,7 +752,6 @@ app.get("/settings", async (req, res) => {
   const { data } = await supabase
     .from("settings")
     .select("*")
-    .eq("id", 1)
     .single();
 
   res.json({
@@ -776,7 +775,6 @@ app.post("/settings", async (req, res) => {
   .from("settings")
   .upsert([
     {
-      id:1,
       email_enabled,
       festName,
       orgName
