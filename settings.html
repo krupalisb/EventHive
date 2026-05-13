@@ -41,35 +41,37 @@
   <!-- Content -->
   <div id="generalContent" class="mt-4 space-y-3">
 
-  <!-- Admin Name -->
-  <div class="border rounded p-3">
-    <div onclick="toggleItem('adminBox')" class="flex justify-between cursor-pointer">
-      <span>Admin Name</span>
-      <span id="adminIcon">▼</span>
-    </div>
-
-    <div id="adminBox" class="mt-2">
-      <input id="adminName" type="text"
-      <select id="defaultEvent" class="w-full border p-2 rounded"></select>
-    </div>
+  <!-- Fest Name -->
+<div class="border rounded p-3">
+  <div onclick="toggleItem('festBox')" class="flex justify-between cursor-pointer">
+    <span>Fest Name</span>
+    <span>▼</span>
   </div>
 
-  <!-- Event Name -->
-  <div class="border rounded p-3">
-    <div onclick="toggleItem('eventBox')" class="flex justify-between cursor-pointer">
-      <span>Event</span>
-      <span id="eventIcon">▼</span>
-    </div>
-
-    <div id="eventBox" class="mt-2">
-      <select class="w-full border p-2 rounded">
-     <option>CodeRush 2.0</option>
-     <option>RoboWar</option>
-     <option>Battle of Bands</option>
-     <option>Hackathon</option>
-      </select>
-    </div>
+  <div id="festBox" class="mt-2">
+    <input
+    id="festName"
+    type="text"
+    value="EventHive Technical Fest 2026"
+    class="w-full border p-2 rounded">
   </div>
+</div>
+
+<!-- Organization -->
+<div class="border rounded p-3">
+  <div onclick="toggleItem('orgBox')" class="flex justify-between cursor-pointer">
+    <span>Organization Name</span>
+    <span>▼</span>
+  </div>
+
+  <div id="orgBox" class="mt-2">
+    <input
+    id="orgName"
+    type="text"
+    value="Jain University"
+    class="w-full border p-2 rounded">
+  </div>
+</div>
 
 </div>
 </div>
@@ -129,20 +131,16 @@ async function loadSettings() {
   const data = await res.json();
 
   document.getElementById("emailToggle").checked = data.email_enabled;
-  document.getElementById("adminName").value = data.adminName;
-  document.getElementById("defaultEvent").value = data.defaultEvent;
 }
 
 // SAVE SETTINGS
 async function saveSettings() {
   const email_enabled = document.getElementById("emailToggle").checked;
-  const adminName = document.getElementById("adminName").value;
-  const defaultEvent = document.getElementById("defaultEvent").value;
-
+  
   const res = await fetch("https://eventhive-bxaw.onrender.com/settings", {
     method: "POST",
     headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({ email_enabled, adminName, defaultEvent })
+    body: JSON.stringify({ email_enabled })
   });
 
   const data = await res.json();
