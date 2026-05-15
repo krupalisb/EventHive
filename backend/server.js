@@ -919,6 +919,12 @@ message:"Error sending reminders ❌"
 // ================= CERTIFICATES =================
 app.post("/send-certificates", async (req, res) => {
 try{
+  
+if(!(await isEmailEnabled())){
+return res.json({
+message:"Emails are disabled ❌"
+});
+}
 
 const path=require("path");
 const PDFDocument=require("pdfkit");
