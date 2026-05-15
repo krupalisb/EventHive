@@ -5,16 +5,35 @@
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="flex items-center justify-center h-screen bg-gray-100">
+<body class="min-h-screen flex items-center justify-center relative overflow-hidden bg-black">
 
-<div class="bg-white p-6 rounded shadow w-80">
+<!-- Background -->
+<div class="absolute inset-0">
+<img
+src="https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1920&auto=format&fit=crop"
+class="w-full h-full object-cover">
+</div>
 
-<h2 class="text-xl mb-4 text-center font-bold">Login</h2>
+<!-- Overlay -->
+<div class="absolute inset-0 bg-black/65"></div>
+<div class="relative z-10 backdrop-blur-md bg-white/10 border border-white/20 p-8 rounded-2xl shadow-2xl w-80 text-white">
 
-<input id="username" placeholder="Username" class="w-full p-2 border mb-3">
-<input id="password" type="password" placeholder="Password" class="w-full p-2 border mb-3">
+<h2 class="text-2xl mb-6 text-center font-bold">
+Login
+</h2>
 
-<button onclick="login()" class="w-full bg-blue-500 text-white p-2 rounded">
+<input
+id="username"
+placeholder="Username"
+class="w-full p-3 bg-white/20 border border-white/30 rounded-xl mb-4 text-white placeholder-gray-200">
+
+<input
+id="password"
+type="password"
+placeholder="Password"
+class="w-full p-3 bg-white/20 border border-white/30 rounded-xl mb-4 text-white placeholder-gray-200">
+
+<button onclick="login()" class="w-full bg-blue-600 hover:bg-blue-700 transition text-white p-3 rounded-xl font-semibold">
 Login
 </button>
 
