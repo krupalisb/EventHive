@@ -5,10 +5,18 @@
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-100 flex items-center justify-center h-screen">
+<body class="min-h-screen flex items-center justify-center relative overflow-hidden bg-black">
 
-<div class="bg-white p-10 rounded shadow w-96 text-center">
+<!-- Background Image -->
+<div class="absolute inset-0">
+<img
+src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1920&auto=format&fit=crop"
+class="w-full h-full object-cover">
+</div>
 
+<!-- Dark Overlay -->
+<div class="absolute inset-0 bg-black/60"></div>
+<div class="relative z-10 backdrop-blur-md bg-white/10 border border-white/20 p-10 rounded-2xl shadow-2xl w-96 text-center text-white">
 <h1 class="text-3xl font-bold mb-8">
 EventHive Portal
 </h1>
@@ -16,12 +24,12 @@ EventHive Portal
 <div class="space-y-4">
 
 <a href="user-login.html"
-class="block bg-blue-600 text-white p-3 rounded">
+class="block bg-blue-600 hover:bg-blue-700 transition text-white p-3 rounded-xl font-semibold">
 Participant Login
 </a>
 
 <a href="visitor.html"
-class="block bg-purple-600 text-white p-3 rounded">
+class="block bg-red-600 hover:bg-red-700 transition text-white p-3 rounded-xl font-semibold">
 Visitor Login
 </a>
 
