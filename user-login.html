@@ -5,23 +5,33 @@
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-100 flex justify-center items-center h-screen">
+<body class="min-h-screen flex justify-center items-center relative overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
 
-<div class="bg-white p-8 rounded shadow w-96">
+  <div class="absolute inset-0 opacity-10">
+<img
+src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=1920&auto=format&fit=crop"
+class="w-full h-full object-cover">
+</div>
 
-<h2 class="text-2xl font-bold mb-6 text-center">
+<div class="relative z-10 bg-white/90 backdrop-blur-sm p-10 rounded-3xl shadow-xl w-96 border border-white/40">
+
+<h2 class="text-3xl font-bold mb-2 text-center text-gray-800">
 Participant Login
 </h2>
+
+<p class="text-center text-gray-500 mb-6 text-sm">
+Access your events, certificates and participation details
+</p>
 
 <input
 id="email"
 type="email"
 placeholder="Enter registered email"
-class="w-full p-3 border rounded mb-4">
+class="w-full p-3 border border-gray-200 rounded-xl mb-4 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-200">
 
 <button
 onclick="loginUser()"
-class="w-full bg-blue-600 text-white p-3 rounded">
+class="w-full bg-indigo-500 hover:bg-indigo-600 transition text-white p-3 rounded-xl font-semibold">
 Login
 </button>
 
